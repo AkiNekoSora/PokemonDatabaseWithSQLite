@@ -1,0 +1,21 @@
+Charmander|4|Fire|16|18.7|0.6|y|The flame on its tail shows the strength of its life-force. If Charmander is weak, the flame also burns weakly.
+Charmeleon|5|Fire|36|41.9|1.1|n
+Charizard|6|Fire/Flying|0|90.5|1.7|n
+Bulbasaur|1|Grass/Poison|16|6.9|0.7|y
+Ivysaur|2|Grass/Poison|32|13.0|1.0|n
+Venusaur|3|Grass/Poison|0|100.0|2.0|y|While it basks in the sun, it can convert the light into energy. As a result, it is more powerful in the summertime.
+Squirtle|7|Water|16|9.0|0.5|y
+Wartortle|8|Water|36|22.5|1.0|y
+Blastoise|9|Water|0|85.5|1.6|n
+Mew|151|Psychic|0|4.0|0.4|n|When viewed through a microscope, this Pokémon’s short, fine, delicate hair can be seen.
+Mewtwo|105|Psychic|0|122|2.0|n
+Sylveon|700|Fairy|0|23.5|1.0|y
+Entei|244|Fire|0|198|2.1|y|Entei embodies the passion of magma. This Pokémon is thought to have been born in the eruption of a volcano. It sends up massive bursts of fire that utterly consume all that they touch.
+Suicune|245|Water|0|187|2.0|n
+Litten|725|Fire|17|4.3|0.4|y|If you try too hard to get close to it, it won’t open up to you. Even if you do grow close, giving it too much affection is still a no-no.
+Torracat|726|Fire|34|25|0.7|y
+
+Incineroar|727|Fire/Dark|0|83|1.8|y
+Dratini|147|Dragon|30|3.3|1.8|n
+Dragonair|148|Dragon|55|16.5|4.0|n|They say that if it emits an aura from its whole body, the weather will begin to change instantly.
+Dragonite|160|Dragon/Flying|0|210|2.2|y

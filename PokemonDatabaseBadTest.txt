@@ -1,0 +1,5 @@
+Squirtle|7|Water|16|9.0|0.5|y
+Wartortle|8|Water|36|22.5|1.0|y
+Blastoise|9|Water|0|85.5|1.6|n
+
+Dragonite|a|Dragon|2|1|1|n
