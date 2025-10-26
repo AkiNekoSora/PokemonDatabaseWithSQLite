@@ -3,7 +3,7 @@ package org.pokemondatabase.DBHelper;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class Pokemon_Types extends DBHelper {
+public class Pokemon_Types_DBHelper extends DBHelper {
 	private final String TABLE_NAME = "Pokemon_Types";
 	public static final String pokedex_number = "pokedex_number";
 	public static final String type_id = "type_id";
@@ -19,7 +19,7 @@ public class Pokemon_Types extends DBHelper {
 	public void insert(Integer pokedex_number, Integer type_id) {
 		
 		Object[] values_ar = {pokedex_number, type_id};
-		String[] fields_ar = {Pokemon_Types.pokedex_number, Pokemon_Types.type_id};
+		String[] fields_ar = {Pokemon_Types_DBHelper.pokedex_number, Pokemon_Types_DBHelper.type_id};
 		String values = "", fields = "";
 		for (int i = 0; i < values_ar.length; i++) {
 			if (values_ar[i] != null) {

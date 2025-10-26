@@ -3,10 +3,15 @@ package org.pokemondatabase.DBHelper;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class Types extends DBHelper {
-	private final String TABLE_NAME = "Types";
-	public static final String type_id = "type_id";
-	public static final String type_name = "type_name";
+public class Pokemon_DBHelper extends DBHelper {
+	private final String TABLE_NAME = "Pokemon";
+	public static final String pokedex_number = "pokedex_number";
+	public static final String pokemon_name = "pokemon_name";
+	public static final String next_evolution_level = "next_evolution_level";
+	public static final String weight = "weight";
+	public static final String height = "height";
+	public static final String has_been_caught = "has_been_caught";
+	public static final String pokedex_entry = "pokedex_entry";
 
 	private String prepareSQL(String fields, String whatField, String whatValue, String sortField, String sort) {
 		String query = "SELECT ";
@@ -16,11 +21,14 @@ public class Types extends DBHelper {
 		return query;
 	}
 
-	public void insert(Integer type_id, String type_name) {
-		type_name = type_name != null ? "\"" + type_name + "\"" : null;
+	public void insert(Integer pokedex_number, String pokemon_name, Integer next_evolution_level, String weight, String height, Integer has_been_caught, String pokedex_entry) {
+		pokemon_name = pokemon_name != null ? "\"" + pokemon_name + "\"" : null;
+		weight = weight != null ? "\"" + weight + "\"" : null;
+		height = height != null ? "\"" + height + "\"" : null;
+		pokedex_entry = pokedex_entry != null ? "\"" + pokedex_entry + "\"" : null;
 		
-		Object[] values_ar = {type_id, type_name};
-		String[] fields_ar = {Types.type_id, Types.type_name};
+		Object[] values_ar = {pokedex_number, pokemon_name, next_evolution_level, weight, height, has_been_caught, pokedex_entry};
+		String[] fields_ar = {Pokemon_DBHelper.pokedex_number, Pokemon_DBHelper.pokemon_name, Pokemon_DBHelper.next_evolution_level, Pokemon_DBHelper.weight, Pokemon_DBHelper.height, Pokemon_DBHelper.has_been_caught, Pokemon_DBHelper.pokedex_entry};
 		String values = "", fields = "";
 		for (int i = 0; i < values_ar.length; i++) {
 			if (values_ar[i] != null) {

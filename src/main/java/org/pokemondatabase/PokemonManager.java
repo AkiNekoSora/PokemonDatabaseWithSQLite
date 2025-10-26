@@ -8,6 +8,9 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Objects;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.exceptions.InvalidPokedexNumberException;
 import org.pokemondatabase.exceptions.InvalidPokemonTypeException;
 
@@ -37,6 +40,9 @@ public class PokemonManager {
     public UserInputHelper userInputHelper;
     private final Text text;
     private final PokemonTypes pokemonTypes;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
+    Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     // Constructor used to bring the userInputHelper and Text classes into scope.
     public PokemonManager() {
@@ -92,6 +98,10 @@ public class PokemonManager {
         BigDecimal pokemonHeightMeters = addPokemonWeightOrHeight("height");
         boolean hasPokemonBeenCaught = hasPokemonBeenCaught();
         String pokedexEntry = addPokedexEntry();
+
+        pokemon_DBHelper.insert(pokedexNumber, pokemonName, nextEvolutionLevel,
+                String.valueOf(pokemonWeightPounds), String.valueOf(pokemonHeightMeters),
+                hasPokemonBeenCaught, pokedexEntry);
 
         Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypes,
                 nextEvolutionLevel, pokemonWeightPounds, pokemonHeightMeters, hasPokemonBeenCaught,

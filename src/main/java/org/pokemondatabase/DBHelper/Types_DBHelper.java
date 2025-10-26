@@ -3,15 +3,10 @@ package org.pokemondatabase.DBHelper;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class Pokemon extends DBHelper {
-	private final String TABLE_NAME = "Pokemon";
-	public static final String pokedex_number = "pokedex_number";
-	public static final String pokemon_name = "pokemon_name";
-	public static final String next_evolution_level = "next_evolution_level";
-	public static final String weight = "weight";
-	public static final String height = "height";
-	public static final String has_been_caught = "has_been_caught";
-	public static final String pokedex_entry = "pokedex_entry";
+public class Types_DBHelper extends DBHelper {
+	private final String TABLE_NAME = "Types";
+	public static final String type_id = "type_id";
+	public static final String type_name = "type_name";
 
 	private String prepareSQL(String fields, String whatField, String whatValue, String sortField, String sort) {
 		String query = "SELECT ";
@@ -21,14 +16,11 @@ public class Pokemon extends DBHelper {
 		return query;
 	}
 
-	public void insert(Integer pokedex_number, String pokemon_name, Integer next_evolution_level, String weight, String height, Integer has_been_caught, String pokedex_entry) {
-		pokemon_name = pokemon_name != null ? "\"" + pokemon_name + "\"" : null;
-		weight = weight != null ? "\"" + weight + "\"" : null;
-		height = height != null ? "\"" + height + "\"" : null;
-		pokedex_entry = pokedex_entry != null ? "\"" + pokedex_entry + "\"" : null;
+	public void insert(Integer type_id, String type_name) {
+		type_name = type_name != null ? "\"" + type_name + "\"" : null;
 		
-		Object[] values_ar = {pokedex_number, pokemon_name, next_evolution_level, weight, height, has_been_caught, pokedex_entry};
-		String[] fields_ar = {Pokemon.pokedex_number, Pokemon.pokemon_name, Pokemon.next_evolution_level, Pokemon.weight, Pokemon.height, Pokemon.has_been_caught, Pokemon.pokedex_entry};
+		Object[] values_ar = {type_id, type_name};
+		String[] fields_ar = {Types_DBHelper.type_id, Types_DBHelper.type_name};
 		String values = "", fields = "";
 		for (int i = 0; i < values_ar.length; i++) {
 			if (values_ar[i] != null) {
@@ -65,6 +57,29 @@ public class Pokemon extends DBHelper {
 
 	public DefaultTableModel selectToTable(String fields, String whatField, String whatValue, String sortField, String sort) {
 		return super.executeQueryToTable(prepareSQL(fields, whatField, whatValue, sortField, sort));
+	}
+
+	public Integer getTypeIdByName(String typeName) {
+		if (typeName == null || typeName.trim().isEmpty()) {
+			return null;
+		}
+
+		ArrayList<ArrayList<Object>> result = select("type_id", "type_name", typeName, null, null);
+
+		if (result != null && !result.isEmpty() && !result.get(0).isEmpty()) {
+			Object value = result.get(0).get(0);
+			if (value instanceof Number) {
+				return ((Number) value).intValue();
+			} else {
+				try {
+					return Integer.parseInt(value.toString());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return null;
 	}
 
 }
