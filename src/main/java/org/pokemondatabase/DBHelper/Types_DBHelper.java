@@ -61,7 +61,7 @@ public class Types_DBHelper extends DBHelper {
 
 	public Integer getTypeIdByName(String typeName) {
 		if (typeName == null || typeName.trim().isEmpty()) {
-			return null;
+			return 0;
 		}
 
 		ArrayList<ArrayList<Object>> result = select("type_id", "type_name", typeName, null, null);
@@ -79,7 +79,7 @@ public class Types_DBHelper extends DBHelper {
 			}
 		}
 
-		return null;
+		return 0;
 	}
 
 	public String getTypeNameByID(Integer typeID) {

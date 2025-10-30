@@ -31,7 +31,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
 import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxRenderer;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxUI;
@@ -77,7 +76,6 @@ public class GuiHelper {
     public JPanel foregroundPanel;
 
     Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
     Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     private final Color titleColor = new Color(36, 37, 40);
@@ -347,8 +345,8 @@ public class GuiHelper {
             if (row.get(6) != null) {
                 pokedexEntry = row.get(6).toString();
             }
-            String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "";
-            String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "";
+            String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "0";
+            String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "0";
 
             PokemonTypes primaryType;
             if (primaryTypeString != null && !primaryTypeString.isEmpty()) {
@@ -359,16 +357,20 @@ public class GuiHelper {
                 primaryType = null;
             }
 
-
-            PokemonTypes secondaryType;
-            if (secondaryTypeString != null && !secondaryTypeString.isEmpty()
-                    && !secondaryTypeString.equals("0")) {
-                secondaryType = PokemonTypes.fromString(types_DBHelper.getTypeNameByID(Integer.valueOf(secondaryTypeString)));
-            } else {
-                secondaryType = null;
+            PokemonTypes secondaryType = null;
+            if (secondaryTypeString != null || secondaryTypeString != "null") {
+                if (!secondaryTypeString.isEmpty()
+                        && !secondaryTypeString.equals("0")) {
+                    secondaryType = PokemonTypes.fromString(types_DBHelper.getTypeNameByID(Integer.valueOf(secondaryTypeString)));
+                }
             }
 
-            PokemonTypesManager pokemonTypes = new PokemonTypesManager(primaryType, secondaryType);
+            PokemonTypesManager pokemonTypes;
+             if (secondaryType != null) {
+                pokemonTypes = new PokemonTypesManager(primaryType, secondaryType);
+            } else {
+                 pokemonTypes = new PokemonTypesManager(primaryType);
+             }
 
             // Create Pokemon object
             Pokemon pokemon = new Pokemon(

@@ -13,11 +13,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
 import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
-import org.pokemondatabase.PokemonTypes;
-import org.pokemondatabase.PokemonTypesManager;
 
 import static java.lang.Integer.parseInt;
 

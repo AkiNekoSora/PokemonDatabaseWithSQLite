@@ -7,6 +7,8 @@ import java.util.Objects;
 import javax.swing.*;
 
 import org.pokemondatabase.*;
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 
 /*
  * Autumn Skye
@@ -28,6 +30,8 @@ import org.pokemondatabase.*;
 public class UpdatePage extends JFrame {
     private final PokemonManager pokemonManager = new PokemonManager();
     public List<Pokemon> pokemonDB;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     private final JLayeredPane pane;
 
@@ -186,10 +190,10 @@ public class UpdatePage extends JFrame {
         String primaryType = Objects.requireNonNull(primaryTypeField.getSelectedItem()).toString();
         String secondaryType;
         Object selectedSecondary = secondaryTypeField.getSelectedItem();
-        if (selectedSecondary == null || selectedSecondary.toString().isEmpty()) {
+        if (selectedSecondary == null || selectedSecondary.toString().isEmpty() || selectedSecondary.equals("null")) {
             secondaryType = null;
         } else {
-            secondaryType = selectedSecondary.toString();
+            secondaryType = Objects.equals(selectedSecondary.toString(), "null") ? "0" : selectedSecondary.toString();
         }
         String pokemonNextEvolutionLevel = pokemonNextEvolutionLevelField.getText().trim();
         String pokemonWeight = weightField.getText().trim();
@@ -250,7 +254,7 @@ public class UpdatePage extends JFrame {
             PokemonTypes secondaryTypeFixed = null;
 
             if (secondaryType != null) {
-                if (!(secondaryType.isEmpty())) {
+                if (!(secondaryType.isEmpty())){
                     secondaryTypeFixed = PokemonTypes.valueOf(secondaryType.toUpperCase());
                 }
             }
@@ -310,6 +314,13 @@ public class UpdatePage extends JFrame {
 
         // IF NO ERRORS FOUND, CONTINUE, UPDATE POKÉMON AND GO BACK TO POKÉMON INFO PAGE
         if (!hasErrors) {
+            pokemon_DBHelper.updateAll(String.valueOf(pokedexNumberInt), pokemonName,
+                    String.valueOf(pokedexNumberInt), pokemonWeight, pokemonHeight,
+                    (hasPokemonBeenCaughtBoolean ? "1" : "0"), pokedexEntry,
+                    String.valueOf(types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType()))),
+                    String.valueOf(types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType()))),
+                    String.valueOf(updatedPokemon.getPokedexNumber()));
+
             updatedPokemon.setPokemonName(pokemonName);
             updatedPokemon.setPokedexNumber(pokedexNumberInt);
             updatedPokemon.setPokemonType(pokemonTypes);

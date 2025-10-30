@@ -2,6 +2,7 @@ package org.pokemondatabase.GUI;
 
 import java.awt.Container;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -9,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 /*
@@ -29,6 +31,8 @@ import org.pokemondatabase.Pokemon;
 public class ComparePage extends JFrame {
     private final JLayeredPane pane;
     public List<Pokemon> pokemonDB;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    GuiHelper helper;
 
     private final JTextField firstPokedexNumberField;
     private final JTextField secondPokedexNumberField;
@@ -41,7 +45,7 @@ public class ComparePage extends JFrame {
      */
     public ComparePage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
         this.pokemonDB = pokemonStorage;
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("COMPARE POKÉMON STATS",  "/background.jpg");
@@ -110,10 +114,13 @@ public class ComparePage extends JFrame {
 
         // CONTINUE IF NO ERRORS FOUND
         if (!hasErrors) {
-            for (Pokemon pokemon : pokemonDB) {
-                if (pokemon.getPokedexNumber() == firstPokedexNumberInt) firstPokemon = pokemon;
-                if (pokemon.getPokedexNumber() == secondPokedexNumberInt) secondPokemon = pokemon;
-            }
+            ArrayList<ArrayList<Object>> selectPokemonList = pokemon_DBHelper.select("*",
+                    "pokedex_number", String.valueOf(firstPokedexNumberInt), null, null);
+            firstPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
+
+            selectPokemonList = pokemon_DBHelper.select("*",
+                    "pokedex_number", String.valueOf(secondPokedexNumberInt), null, null);
+            secondPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
 
             // VERIFIES BOTH POKÉMON EXIST
             if (firstPokemon == null) {

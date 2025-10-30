@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
 import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.exceptions.InvalidPokedexNumberException;
 import org.pokemondatabase.exceptions.InvalidPokemonTypeException;
@@ -42,7 +41,6 @@ public class PokemonManager {
     private final Text text;
     private final PokemonTypes pokemonTypes;
     Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
     Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     // Constructor used to bring the userInputHelper and Text classes into scope.
@@ -137,6 +135,27 @@ public class PokemonManager {
      */
     public String addPokemonName() {
         return userInputHelper.getValidPokemonName("Enter Pokémon Name: ");
+    }
+
+    public String formatPokemonName(String pokemonName) {
+        if (pokemonName == null || pokemonName.isEmpty()) {
+            return pokemonName;
+        }
+
+        pokemonName = pokemonName.toLowerCase().trim();
+        char[] chars = pokemonName.toCharArray();
+        boolean capitalizeNext = true;
+
+        // Cycles through the String and capitalizes after white space, -, /, or first number
+        for (int i = 0; i < chars.length; i++) {
+            if (Character.isWhitespace(chars[i]) || chars[i] == '-' || chars[i] == '\'') {
+                capitalizeNext = true;
+            } else if (capitalizeNext) {
+                chars[i] = Character.toUpperCase(chars[i]);
+                capitalizeNext = false;
+            }
+        }
+        return new String(chars);
     }
 
     /* Method Name: Add Pokédex Number

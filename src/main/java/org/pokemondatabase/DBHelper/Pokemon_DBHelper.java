@@ -53,6 +53,49 @@ public class Pokemon_DBHelper extends DBHelper {
 		super.execute("UPDATE " + TABLE_NAME + " set " + whatField + " = \"" + whatValue + "\" where " + whereField + " = \"" + whereValue + "\";");
 	}
 
+	public void updateCaughtStatus(Boolean currentCaughtStatus, String whereValue) {
+		if (currentCaughtStatus){
+			super.execute("UPDATE " + TABLE_NAME + " set has_been_caught = \"0\" " +
+					"where pokedex_number = \"" + whereValue + "\";");
+		} else {
+			super.execute("UPDATE " + TABLE_NAME + " set has_been_caught = \"1\" " +
+					"where pokedex_number = \"" + whereValue + "\";");
+		}
+	}
+
+	public void updateAll(String newPokedexNumber, String newPokemonName, String newEvoLevel,
+						  String newWeight, String newHeight, String newCaughtStatus,
+						  String newEntry, String newPrimaryType,
+						  String newSecondaryType, String currentPokedexNumber) {
+
+		super.execute("UPDATE " + TABLE_NAME + " set pokemon_name = \"" + newPokemonName + "\" where" +
+				" pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set next_evolution_level = \"" + newEvoLevel +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set weight = \"" + newWeight +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set height = \"" + newHeight +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set has_been_caught = \"" + newCaughtStatus +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set pokedex_entry = \"" + newEntry +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set primary_type = \"" + newPrimaryType +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set secondary_type = \"" + newSecondaryType +
+				"\" where pokedex_number = \"" + currentPokedexNumber + "\";");
+
+		super.execute("UPDATE " + TABLE_NAME + " set pokedex_number = \"" + newPokedexNumber + "\" where" +
+				" pokedex_number = \"" + currentPokedexNumber + "\";");
+	}
+
 	public ArrayList<ArrayList<Object>> select(String fields, String whatField, String whatValue, String sortField, String sort) {
 		return super.executeQuery(prepareSQL(fields, whatField, whatValue, sortField, sort));
 	}

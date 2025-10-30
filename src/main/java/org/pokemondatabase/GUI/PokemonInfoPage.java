@@ -1,5 +1,6 @@
 package org.pokemondatabase.GUI;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 import javax.swing.*;
@@ -20,6 +21,7 @@ import java.util.List;
  */
 public class PokemonInfoPage {
     private final JLayeredPane pane;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
 
     public List<Pokemon> pokemonDB;
 
@@ -87,6 +89,8 @@ public class PokemonInfoPage {
         // ADDS CAUGHT BUTTON AND REFRESHES THE PAGE TO SHOW THE IMAGE
         JButton caughtButton = helper.addMediumButton("CAUGHT", 20, 220);
         caughtButton.addActionListener(e -> {
+            pokemon_DBHelper.updateCaughtStatus(pokemon.getPokemonIsCaught(),
+                    String.valueOf(pokemon.getPokedexNumber()));
             pokemon.setPokemonIsCaught(!pokemon.getPokemonIsCaught());
             mainApp.goToPage(new PokemonInfoPage(mainApp, pokemon, pokemonDB).getMainPanel());
         });

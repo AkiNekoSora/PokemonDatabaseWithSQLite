@@ -4,11 +4,11 @@ import java.awt.Container;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.*;
 
 import org.pokemondatabase.*;
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
 import org.pokemondatabase.DBHelper.Types_DBHelper;
 
 /*
@@ -274,8 +274,9 @@ public class AddManualPage extends JFrame {
 
         // Continues if it does not have errors
         if (!hasErrors) {
+            String fixedPokemonName = pokemonManager.formatPokemonName(pokemonName);
 
-            pokemon_DBHelper.insert(pokedexNumberInt, pokemonName, pokemonNextEvolutionLevelInt,
+            pokemon_DBHelper.insert(pokedexNumberInt, fixedPokemonName, pokemonNextEvolutionLevelInt,
                     String.valueOf(pokemonWeightBigDecimal), String.valueOf(pokemonHeightBigDecimal),
                     (hasPokemonBeenCaughtBoolean ? 1 : 0), pokedexEntry, types_DBHelper.getTypeIdByName(primaryType),
                     types_DBHelper.getTypeIdByName(secondaryType));
@@ -297,10 +298,10 @@ public class AddManualPage extends JFrame {
                 String nextEvoLevel = row.get(2) != null ? row.get(2).toString() : "N/A";
                 String weight = row.get(3) != null ? row.get(3).toString() : "N/A";
                 String height = row.get(4) != null ? row.get(4).toString() : "N/A";
-                String caught = row.get(5) != null ? row.get(5).toString() : "N/A";
+                String caught = row.get(5) == "1" ? "Caught" : "Not Caught";
                 String enteredPokedexEntry = row.get(6) != null ? row.get(6).toString() : "";
-                String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "";
-                String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "";
+                String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "0";
+                String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "0";
 
 
                 String fixedPokedexEntry = enteredPokedexEntry.replace("&", "&amp;")
@@ -312,10 +313,11 @@ public class AddManualPage extends JFrame {
 
                 String typeDisplay = "";
                 if (primaryTypeString != "") {
-                    if (secondaryTypeString != "") {
-                        typeDisplay = primaryTypeString + " & " + secondaryTypeString;
+                    if (secondaryTypeString != "" && !Objects.equals(secondaryTypeString, "0")) {
+                        typeDisplay = types_DBHelper.getTypeNameByID(Integer.valueOf(primaryTypeString)) +
+                                        " & " + types_DBHelper.getTypeNameByID(Integer.valueOf(secondaryTypeString));
                     } else {
-                        typeDisplay = primaryTypeString;
+                        typeDisplay = types_DBHelper.getTypeNameByID(Integer.valueOf(primaryTypeString));
                     }
                 }
 
