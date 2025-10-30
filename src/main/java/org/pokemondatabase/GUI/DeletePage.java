@@ -4,6 +4,7 @@ import java.awt.Container;
 import java.util.List;
 import javax.swing.*;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 /*
@@ -21,6 +22,7 @@ import org.pokemondatabase.Pokemon;
 public class DeletePage extends JPanel {
     public List<Pokemon> pokemonDB;
     private final JLayeredPane pane;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
 
     public DeletePage(MainMenuPage mainApp, Pokemon pokemon, List<Pokemon> pokemonStorage) {
         this.pokemonDB = pokemonStorage;
@@ -39,7 +41,7 @@ public class DeletePage extends JPanel {
 
         // DELETES THE POKÉMON AND MOVES TO SUCCESS PAGE
         deleteButton.addActionListener(e -> {
-            pokemonDB.remove(pokemon);
+            pokemon_DBHelper.delete("pokedex_number", String.valueOf(pokemon.getPokedexNumber()));
             mainApp.goToPage(new DeleteSuccessPage(mainApp, pokemonDB).getMainPanel());
         });
 

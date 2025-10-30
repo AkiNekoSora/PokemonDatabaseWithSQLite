@@ -31,7 +31,6 @@ public class AddManualPage extends JFrame {
     private final JLayeredPane pane;
     private final PokemonManager pokemonManager = new PokemonManager();
     Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
     Types_DBHelper types_DBHelper = new Types_DBHelper();
     public List<Pokemon> pokemonDB;
 
@@ -275,16 +274,12 @@ public class AddManualPage extends JFrame {
 
         // Continues if it does not have errors
         if (!hasErrors) {
-//            Pokemon newPokemon = pokemonManager.addPokemonForGUI(pokemonName, pokedexNumberInt,
-//                    pokemonTypes, pokemonNextEvolutionLevelInt, pokemonWeightBigDecimal,
-//                    pokemonHeightBigDecimal, hasPokemonBeenCaughtBoolean, pokedexEntry);
-//            pokemonDB.add(newPokemon);
 
             pokemon_DBHelper.insert(pokedexNumberInt, pokemonName, pokemonNextEvolutionLevelInt,
                     String.valueOf(pokemonWeightBigDecimal), String.valueOf(pokemonHeightBigDecimal),
                     (hasPokemonBeenCaughtBoolean ? 1 : 0), pokedexEntry, types_DBHelper.getTypeIdByName(primaryType),
                     types_DBHelper.getTypeIdByName(secondaryType));
-            }
+
 
             // Query database for the Pokémon with the given Pokédex number
             ArrayList<ArrayList<Object>> result = pokemon_DBHelper.select(
@@ -344,8 +339,9 @@ public class AddManualPage extends JFrame {
                 // Pokémon not found in DB
                 JOptionPane.showMessageDialog(null, "Pokémon with number " + pokedexNumberInt + " not found.");
             }
-
         }
+
+    }
 
     /* Method Name: Is Digit or Period
      * Purpose: Checks through a string. Checking if each char is either a digit or a period.

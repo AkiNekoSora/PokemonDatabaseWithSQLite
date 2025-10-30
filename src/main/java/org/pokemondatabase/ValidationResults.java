@@ -1,5 +1,7 @@
 package org.pokemondatabase;
 
+import java.util.List;
+
 /*
  * Autumn Skye
  * CEN-3024C 13950
@@ -13,8 +15,9 @@ package org.pokemondatabase;
  *              - Getters
  */
 public class ValidationResults {
-    public final boolean success;
-    public String resultString;
+    private final boolean success;
+    private String resultString;
+    private Pokemon pokemon;
 
     // CONSTRUCTOR
     public ValidationResults(boolean success, String resultString) {
@@ -27,8 +30,16 @@ public class ValidationResults {
         this.success = success;
     }
 
+    // OVERLOADED CONSTRUCTOR
+    public ValidationResults(boolean success, String resultString, Pokemon pokemon) {
+        this.success = success;
+        this.resultString = resultString;
+        this.pokemon = pokemon;
+    }
+
     // GETTERS
     public boolean getIsSuccess() {return success;}
     public String getResultString() {return resultString;}
+    public Pokemon getPokemon() {return pokemon;}
 }
 

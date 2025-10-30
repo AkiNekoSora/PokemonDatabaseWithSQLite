@@ -49,7 +49,7 @@ public class PokemonInfoPage {
         if (types.length > 1) helper.addImageIcon("/" + types[1] + ".png", 755, 250, 188, 63);
 
         // NEXT EVOLUTION NUMBER WITH FORMATING
-        if (pokemon.getNextEvolutionLevel() != null || pokemon.getNextEvolutionLevel() != 0) {
+        if (pokemon.getNextEvolutionLevel() != null && pokemon.getNextEvolutionLevel() != 0) {
             nextEvoLevelString = String.format("%02d", pokemon.getNextEvolutionLevel());
         } else {
             nextEvoLevelString = "00";

@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,10 @@ import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxRenderer;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxUI;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomScrollBarUI;
 import org.pokemondatabase.Pokemon;
+import org.pokemondatabase.PokemonTypes;
+import org.pokemondatabase.PokemonTypesManager;
+
+import static java.lang.Integer.parseInt;
 
 /*
  * Autumn Skye
@@ -259,11 +264,11 @@ public class GuiHelper {
      * Parameters: List of Pokémon and List of Filtered Pokémon
      * Return Value: JScrollPane
      */
-    public JScrollPane updatePokemonList(List<Pokemon> pokemonDB,
+    public JScrollPane updatePokemonList(List<Pokemon> convertedPokemonDB,
                                          List<Pokemon> filteredPokemonList) {
         // If there is no scroll pane, call addPokémonList instead
         if (pokemonScrollPane == null) {
-            addPokemonList(pokemonDB, filteredPokemonList);
+            addPokemonList(convertedPokemonDB, filteredPokemonList);
             return pokemonScrollPane;
         }
 
@@ -274,7 +279,7 @@ public class GuiHelper {
 
         // Adds each Pokémon to the list panel using createPokémonListItem
         for (Pokemon pokemon : filteredPokemonList) {
-            newListPanel.add(createPokemonListItem(pokemon, pokemonDB));
+            newListPanel.add(createPokemonListItem(pokemon, convertedPokemonDB));
         }
 
         pokemonScrollPane.setViewportView(newListPanel);
@@ -323,6 +328,58 @@ public class GuiHelper {
             }
         });
         return panel;
+    }
+
+    public List<Pokemon> convertToPokemonList(ArrayList<ArrayList<Object>> pokemonDatabase) {
+        List<Pokemon> convertedList = new ArrayList<>();
+
+        for (ArrayList<Object> row : pokemonDatabase) {
+            int pokedexNumber = parseInt(row.get(0).toString());
+            String pokemonName = row.get(1).toString();
+            Integer nextEvoLevel = null;
+            if (row.get(2) != null) {
+                nextEvoLevel = parseInt(row.get(2).toString());
+            }
+            BigDecimal pokemonWeight = new BigDecimal(row.get(3).toString());
+            BigDecimal pokemonHeight = new BigDecimal(row.get(4).toString());
+            Boolean hasBeenCaught = parseInt(row.get(5).toString()) != 0;
+            String pokedexEntry = null;
+            if (row.get(6) != null) {
+                pokedexEntry = row.get(6).toString();
+            }
+            String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "";
+            String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "";
+
+            PokemonTypes primaryType;
+            if (primaryTypeString != null && !primaryTypeString.isEmpty()) {
+                primaryType = PokemonTypes.fromString(
+                        types_DBHelper.getTypeNameByID(Integer.valueOf(primaryTypeString))
+                );
+            } else {
+                primaryType = null;
+            }
+
+
+            PokemonTypes secondaryType;
+            if (secondaryTypeString != null && !secondaryTypeString.isEmpty()
+                    && !secondaryTypeString.equals("0")) {
+                secondaryType = PokemonTypes.fromString(types_DBHelper.getTypeNameByID(Integer.valueOf(secondaryTypeString)));
+            } else {
+                secondaryType = null;
+            }
+
+            PokemonTypesManager pokemonTypes = new PokemonTypesManager(primaryType, secondaryType);
+
+            // Create Pokemon object
+            Pokemon pokemon = new Pokemon(
+                    pokemonName, pokedexNumber, pokemonTypes, nextEvoLevel,
+                    pokemonWeight, pokemonHeight, hasBeenCaught, pokedexEntry
+            );
+
+            convertedList.add(pokemon);
+        }
+
+        return convertedList;
     }
 
     /* Method Name: addLabel

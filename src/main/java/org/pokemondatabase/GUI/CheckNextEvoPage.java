@@ -1,6 +1,7 @@
 package org.pokemondatabase.GUI;
 
 import java.awt.Container;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -8,6 +9,8 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 /*
@@ -27,6 +30,8 @@ import org.pokemondatabase.Pokemon;
 public class CheckNextEvoPage extends JFrame {
     private final JLayeredPane pane;
     public List<Pokemon> pokemonDB;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    GuiHelper helper;
 
     private JTextField PokedexNumberField;
     private JTextField currentLevelField;
@@ -38,8 +43,7 @@ public class CheckNextEvoPage extends JFrame {
      * Parameters: MainMenuPage, List of Pokémon
      */
     public CheckNextEvoPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("CHECK NEXT POKÉMON EVOLUTION",  "/background.jpg");
@@ -83,7 +87,8 @@ public class CheckNextEvoPage extends JFrame {
         pokemonEvolutionResults.append("<html><body style='text-align:center; " +
                 "width:350px; font-size:20pt;'>");
 
-        Pokemon specifiedPokemon = null;
+        ArrayList<ArrayList<Object>> selectPokemonList = null;
+        Pokemon selectPokemon = null;
         int pokedexNumberInt = 0;
         int currentLevelInt = 0;
 
@@ -101,10 +106,10 @@ public class CheckNextEvoPage extends JFrame {
         } else if(isDigit(pokedexNumber)) {
             pokedexNumberInt = Integer.parseInt(pokedexNumber);
 
-            for (Pokemon pokemon : pokemonDB) {
-                if (pokemon.getPokedexNumber() == pokedexNumberInt) specifiedPokemon = pokemon;
-            }
-            if (specifiedPokemon == null) {
+            selectPokemonList = pokemon_DBHelper.select("*",
+            "pokedex_number", String.valueOf(pokedexNumberInt), null, null);
+            selectPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
+            if (selectPokemon == null) {
                 errorLabelPokeNumber.setText("No Pokémon Exists with this Pokédex Number");
                 hasErrors = true;
             }
@@ -131,7 +136,7 @@ public class CheckNextEvoPage extends JFrame {
         if (!hasErrors) {
             // CONTINUE IF NO ERRORS FOUND
             if (!hasErrors) {
-                Integer nextEvolutionLevel = specifiedPokemon.getNextEvolutionLevel();
+                Integer nextEvolutionLevel = selectPokemon.getNextEvolutionLevel();
                 // Checks if the Pokémon has a next Evolution
                 if (nextEvolutionLevel == null || nextEvolutionLevel == 0) {
                     pokemonEvolutionResults.append("<h2 style='font-size:35pt;'>").append
@@ -149,9 +154,9 @@ public class CheckNextEvoPage extends JFrame {
 
                         pokemonEvolutionResults.append("There ").append(isOrAre)
                                 .append(evolutionLevelDiff).append(" evolution levels until ")
-                                .append(specifiedPokemon.getPokemonName()).append(" evolves.<br>")
-                                .append(specifiedPokemon.getPokemonName()).append(" evolves at level: ")
-                                .append(specifiedPokemon.getNextEvolutionLevel()).append("</body></html>");
+                                .append(selectPokemon.getPokemonName()).append(" evolves.<br>")
+                                .append(selectPokemon.getPokemonName()).append(" evolves at level: ")
+                                .append(selectPokemon.getNextEvolutionLevel()).append("</body></html>");
                     }
                 }
 

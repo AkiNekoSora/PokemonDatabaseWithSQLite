@@ -197,7 +197,7 @@ public class PokemonManager {
                 "    Please enter the Primary Pokémon Type: ");
 
         boolean userAnswer = userInputHelper.getBooleanInput("Would you like to add a Secondary " +
-                        "Pokémon Type?");
+                "Pokémon Type?");
 
         // If else used to check if the user wants to choose a secondary Pokémon type or not.
         if (userAnswer) {
@@ -292,7 +292,7 @@ public class PokemonManager {
      * Parameters: The List that holds all Pokémon, File Location
      * Return Value: Validation Results (boolean, String)
      */
-    public ValidationResults  addPokemonFromFileGUI(List<Pokemon> pokemonStorage, String fileLocation) {
+    public ValidationResults addPokemonFromFileGUI(List<Pokemon> pokemonStorage, String fileLocation) {
         int pokemonListPreviousSize = pokemonStorage.size();
         int lineCounter = 0;
         int successfulPokemonCount = 0;
@@ -300,7 +300,7 @@ public class PokemonManager {
         boolean isFileValid = true;
         String errorMessage = "";
 
-        Pokemon newPokemon = null;
+        List<Pokemon> tempPokemonList = new ArrayList<>();
 
         // Attempts to read the file. Throws an error if it cannot be read.
         try (BufferedReader reader = new BufferedReader(new FileReader(fileLocation))) {
@@ -329,6 +329,7 @@ public class PokemonManager {
 
                 if (returnedList != null) {
                     if (returnedList.getIsSuccess()) {
+                        tempPokemonList.add(returnedList.getPokemon());
                         continue;
                     } else {
                         errorMessage = returnedList.getResultString();
@@ -346,7 +347,21 @@ public class PokemonManager {
         // Checks if all Pokémon were entered. If not, it deletes all entries and goes back to
         // the main menu.
         if (isFileValid) {
-            return new ValidationResults(true, String.valueOf(successfulPokemonCount));
+            int successfulAddPokemonCount = 0;
+            for (Pokemon pokemon : tempPokemonList) {
+                pokemon_DBHelper.insert(pokemon.getPokedexNumber(), pokemon.getPokemonName(),
+                        pokemon.getNextEvolutionLevel(),
+                        String.valueOf(pokemon.getPokemonWeightKilograms()),
+                        String.valueOf(pokemon.getPokemonHeightMeters()),
+                        (pokemon.getPokemonIsCaught() ? 1 : 0), pokemon.getPokedexEntry(),
+                        types_DBHelper.getTypeIdByName(String.valueOf(pokemon.getPrimaryType())),
+                        types_DBHelper.getTypeIdByName(String.valueOf(pokemon.getSecondaryType())));
+                successfulAddPokemonCount++;
+            }
+            if (successfulAddPokemonCount == tempPokemonList.size() && successfulPokemonCount == successfulAddPokemonCount) {
+                return new ValidationResults(true, String.valueOf(successfulPokemonCount));
+            } else return new ValidationResults(false, "Not all Pokemon have been added. Unknown " +
+                    "Error occured.");
         } else {
             // Used to remove the Pokémon that were added in this run if there was an error.
             while (pokemonStorage.size() > pokemonListPreviousSize) {
@@ -364,8 +379,9 @@ public class PokemonManager {
      *          counter used to check what current line the system is on.
      * Return Value: ValidationResults(Boolean, String)
      */
-    public ValidationResults getPokemonForGUI(List<Pokemon> pokemonStorage, String[] variables,
-                                 int lineCounter) {
+    public ValidationResults getPokemonForGUI(List<Pokemon> pokemonStorage, String[] variables, int lineCounter) {
+        Pokemon tempPokemon;
+
         // Grab Pokémon Name
         String pokemonName = "";
         if (userInputHelper.hasNoDigitsOrSpaces(variables[0])) {
@@ -482,26 +498,18 @@ public class PokemonManager {
         }
 
         try {
-//            Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypesList, pokemonNextEvolution,
-//                pokemonWeight, pokemonHeight, pokemonIsCaught, pokedexEntry);
-//            pokemonStorage.add(newPokemon);
-            pokemon_DBHelper.insert(pokedexNumber, pokemonName, pokemonNextEvolution,
-                    String.valueOf(pokemonWeight), String.valueOf(pokemonHeight),
-                    (pokemonIsCaught ? 1 : 0), pokedexEntry,
-                    types_DBHelper.getTypeIdByName(String.valueOf(primaryType)),
-                    types_DBHelper.getTypeIdByName(String.valueOf(secondaryType)));
-
-            pokemonTypes_DBHelper.insert(pokedexNumber,
-                    types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypesList.getPokemonPrimaryType())));
-            if (secondaryType != null) {
-                pokemonTypes_DBHelper.insert(pokedexNumber,
-                        types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypesList.getPokemonSecondaryType())));
-            }
+            tempPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypesList,
+                    pokemonNextEvolution, pokemonWeight, pokemonHeight, pokemonIsCaught, pokedexEntry);
+//            pokemon_DBHelper.insert(pokedexNumber, pokemonName, pokemonNextEvolution,
+//                    String.valueOf(pokemonWeight), String.valueOf(pokemonHeight),
+//                    (pokemonIsCaught ? 1 : 0), pokedexEntry,
+//                    types_DBHelper.getTypeIdByName(String.valueOf(primaryType)),
+//                    types_DBHelper.getTypeIdByName(String.valueOf(secondaryType)));
         } catch (InvalidPokedexNumberException | InputMismatchException |
                  NumberFormatException | InvalidPokemonTypeException e) {
             return new ValidationResults(false, "Pokémon was not added to list. Error can be found on line " + lineCounter);
         }
-        return new ValidationResults(true, String.valueOf(lineCounter));
+        return new ValidationResults(true, String.valueOf(lineCounter), tempPokemon);
     }
 
     /* Method Name: Add Pokémon From File Method
