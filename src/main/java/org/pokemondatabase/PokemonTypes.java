@@ -35,10 +35,12 @@ public enum PokemonTypes {
     /* Method Name: From String
      * Purpose: Attempts to return the enum value of the input. If it fails it throws an
      *          InvalidPokémonTypeException.
+     * Defense of Static: This method had to be static because it needed to be called and you
+     * cannot instantiate an enum class. Hopefully that is okay!
      * Parameters: String
      * Return Value: PokémonTypes
      */
-    public PokemonTypes fromString(String input) {
+    public static PokemonTypes fromString(String input) {
         try {
             return PokemonTypes.valueOf(input.trim().toUpperCase());
         } catch (IllegalArgumentException e) {

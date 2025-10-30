@@ -4,10 +4,14 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Objects;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.exceptions.InvalidPokedexNumberException;
 import org.pokemondatabase.exceptions.InvalidPokemonTypeException;
 
@@ -37,6 +41,9 @@ public class PokemonManager {
     public UserInputHelper userInputHelper;
     private final Text text;
     private final PokemonTypes pokemonTypes;
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
+    Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     // Constructor used to bring the userInputHelper and Text classes into scope.
     public PokemonManager() {
@@ -92,6 +99,13 @@ public class PokemonManager {
         BigDecimal pokemonHeightMeters = addPokemonWeightOrHeight("height");
         boolean hasPokemonBeenCaught = hasPokemonBeenCaught();
         String pokedexEntry = addPokedexEntry();
+
+        pokemon_DBHelper.insert(pokedexNumber, pokemonName, nextEvolutionLevel,
+                String.valueOf(pokemonWeightPounds), String.valueOf(pokemonHeightMeters),
+                (hasPokemonBeenCaught ? 1 : 0), pokedexEntry,
+                types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType())),
+                types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType())));
+
 
         Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypes,
                 nextEvolutionLevel, pokemonWeightPounds, pokemonHeightMeters, hasPokemonBeenCaught,
@@ -155,13 +169,17 @@ public class PokemonManager {
      * Return Value: ValidationResults (boolean and String)
      */
     public ValidationResults validateUniquePokedexNumber(int pokedexNumber, List<Pokemon> pokemonStorage) {
-        for (Pokemon pokemon : pokemonStorage) {
-            if (pokemon.getPokedexNumber() == pokedexNumber) {
-                return new ValidationResults(false,
-                        ("Pokédex number " + pokemon.getPokedexNumber() +
-                        " already exists as " + pokemon.getPokemonName() + "."));
-            }
+        ArrayList<ArrayList<Object>> result = pokemon_DBHelper.select(
+                "*", "pokedex_number", String.valueOf(pokedexNumber), null, null);
+
+        if (result != null && !result.isEmpty()) {
+            Object existingNameObj = result.get(0).get(1);
+            String existingName = existingNameObj != null ? existingNameObj.toString() : "Unknown";
+
+            return new ValidationResults(false,
+                    "Pokédex number " + pokedexNumber + " already exists as " + existingName + ".");
         }
+
         return new ValidationResults(true);
     }
 
@@ -464,9 +482,21 @@ public class PokemonManager {
         }
 
         try {
-            Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypesList, pokemonNextEvolution,
-                pokemonWeight, pokemonHeight, pokemonIsCaught, pokedexEntry);
-            pokemonStorage.add(newPokemon);
+//            Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypesList, pokemonNextEvolution,
+//                pokemonWeight, pokemonHeight, pokemonIsCaught, pokedexEntry);
+//            pokemonStorage.add(newPokemon);
+            pokemon_DBHelper.insert(pokedexNumber, pokemonName, pokemonNextEvolution,
+                    String.valueOf(pokemonWeight), String.valueOf(pokemonHeight),
+                    (pokemonIsCaught ? 1 : 0), pokedexEntry,
+                    types_DBHelper.getTypeIdByName(String.valueOf(primaryType)),
+                    types_DBHelper.getTypeIdByName(String.valueOf(secondaryType)));
+
+            pokemonTypes_DBHelper.insert(pokedexNumber,
+                    types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypesList.getPokemonPrimaryType())));
+            if (secondaryType != null) {
+                pokemonTypes_DBHelper.insert(pokedexNumber,
+                        types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypesList.getPokemonSecondaryType())));
+            }
         } catch (InvalidPokedexNumberException | InputMismatchException |
                  NumberFormatException | InvalidPokemonTypeException e) {
             return new ValidationResults(false, "Pokémon was not added to list. Error can be found on line " + lineCounter);

@@ -3,15 +3,10 @@ package org.pokemondatabase.DBHelper;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class Pokemon extends DBHelper {
-	private final String TABLE_NAME = "Pokemon";
+public class Pokemon_Types_DBHelper extends DBHelper {
+	private final String TABLE_NAME = "Pokemon_Types";
 	public static final String pokedex_number = "pokedex_number";
-	public static final String pokemon_name = "pokemon_name";
-	public static final String next_evolution_level = "next_evolution_level";
-	public static final String weight = "weight";
-	public static final String height = "height";
-	public static final String has_been_caught = "has_been_caught";
-	public static final String pokedex_entry = "pokedex_entry";
+	public static final String type_id = "type_id";
 
 	private String prepareSQL(String fields, String whatField, String whatValue, String sortField, String sort) {
 		String query = "SELECT ";
@@ -21,14 +16,10 @@ public class Pokemon extends DBHelper {
 		return query;
 	}
 
-	public void insert(Integer pokedex_number, String pokemon_name, Integer next_evolution_level, String weight, String height, Integer has_been_caught, String pokedex_entry) {
-		pokemon_name = pokemon_name != null ? "\"" + pokemon_name + "\"" : null;
-		weight = weight != null ? "\"" + weight + "\"" : null;
-		height = height != null ? "\"" + height + "\"" : null;
-		pokedex_entry = pokedex_entry != null ? "\"" + pokedex_entry + "\"" : null;
+	public void insert(Integer pokedex_number, Integer type_id) {
 		
-		Object[] values_ar = {pokedex_number, pokemon_name, next_evolution_level, weight, height, has_been_caught, pokedex_entry};
-		String[] fields_ar = {Pokemon.pokedex_number, Pokemon.pokemon_name, Pokemon.next_evolution_level, Pokemon.weight, Pokemon.height, Pokemon.has_been_caught, Pokemon.pokedex_entry};
+		Object[] values_ar = {pokedex_number, type_id};
+		String[] fields_ar = {Pokemon_Types_DBHelper.pokedex_number, Pokemon_Types_DBHelper.type_id};
 		String values = "", fields = "";
 		for (int i = 0; i < values_ar.length; i++) {
 			if (values_ar[i] != null) {

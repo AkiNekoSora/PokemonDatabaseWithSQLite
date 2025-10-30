@@ -3,10 +3,10 @@ package org.pokemondatabase.DBHelper;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 
-public class Pokemon_Types extends DBHelper {
-	private final String TABLE_NAME = "Pokemon_Types";
-	public static final String pokedex_number = "pokedex_number";
+public class Types_DBHelper extends DBHelper {
+	private final String TABLE_NAME = "Types";
 	public static final String type_id = "type_id";
+	public static final String type_name = "type_name";
 
 	private String prepareSQL(String fields, String whatField, String whatValue, String sortField, String sort) {
 		String query = "SELECT ";
@@ -16,10 +16,11 @@ public class Pokemon_Types extends DBHelper {
 		return query;
 	}
 
-	public void insert(Integer pokedex_number, Integer type_id) {
+	public void insert(Integer type_id, String type_name) {
+		type_name = type_name != null ? "\"" + type_name + "\"" : null;
 		
-		Object[] values_ar = {pokedex_number, type_id};
-		String[] fields_ar = {Pokemon_Types.pokedex_number, Pokemon_Types.type_id};
+		Object[] values_ar = {type_id, type_name};
+		String[] fields_ar = {Types_DBHelper.type_id, Types_DBHelper.type_name};
 		String values = "", fields = "";
 		for (int i = 0; i < values_ar.length; i++) {
 			if (values_ar[i] != null) {
@@ -56,6 +57,47 @@ public class Pokemon_Types extends DBHelper {
 
 	public DefaultTableModel selectToTable(String fields, String whatField, String whatValue, String sortField, String sort) {
 		return super.executeQueryToTable(prepareSQL(fields, whatField, whatValue, sortField, sort));
+	}
+
+	public Integer getTypeIdByName(String typeName) {
+		if (typeName == null || typeName.trim().isEmpty()) {
+			return null;
+		}
+
+		ArrayList<ArrayList<Object>> result = select("type_id", "type_name", typeName, null, null);
+
+		if (result != null && !result.isEmpty() && !result.get(0).isEmpty()) {
+			Object value = result.get(0).get(0);
+			if (value instanceof Number) {
+				return ((Number) value).intValue();
+			} else {
+				try {
+					return Integer.parseInt(value.toString());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public String getTypeNameByID(Integer typeID) {
+		if (typeID == null) {
+			return null;
+		}
+
+		ArrayList<ArrayList<Object>> result = select("type_name", "type_id",
+				String.valueOf(typeID), null, null);
+
+		if (result != null && !result.isEmpty()) {
+			ArrayList<Object> row = result.get(0);
+			if (row != null && !row.isEmpty() && row.get(0) != null) {
+				return row.get(0).toString();
+			}
+		}
+
+		return null;
 	}
 
 }

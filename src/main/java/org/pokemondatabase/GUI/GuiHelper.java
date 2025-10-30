@@ -13,6 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -28,6 +29,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxRenderer;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxUI;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomScrollBarUI;
@@ -66,6 +70,10 @@ import org.pokemondatabase.Pokemon;
 public class GuiHelper {
     private MainMenuPage mainApp;
     public JPanel foregroundPanel;
+
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
+    Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     private final Color titleColor = new Color(36, 37, 40);
     public final Color pokemonRed = new Color(239, 49, 49);
@@ -251,7 +259,8 @@ public class GuiHelper {
      * Parameters: List of Pokémon and List of Filtered Pokémon
      * Return Value: JScrollPane
      */
-    public JScrollPane updatePokemonList(List<Pokemon> pokemonDB, List<Pokemon> filteredPokemonList) {
+    public JScrollPane updatePokemonList(List<Pokemon> pokemonDB,
+                                         List<Pokemon> filteredPokemonList) {
         // If there is no scroll pane, call addPokémonList instead
         if (pokemonScrollPane == null) {
             addPokemonList(pokemonDB, filteredPokemonList);
