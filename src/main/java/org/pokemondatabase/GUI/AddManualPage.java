@@ -2,10 +2,14 @@ package org.pokemondatabase.GUI;
 
 import java.awt.Container;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
 import org.pokemondatabase.*;
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Pokemon_Types_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 
 /*
  * Autumn Skye
@@ -26,6 +30,9 @@ import org.pokemondatabase.*;
 public class AddManualPage extends JFrame {
     private final JLayeredPane pane;
     private final PokemonManager pokemonManager = new PokemonManager();
+    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    Pokemon_Types_DBHelper pokemonTypes_DBHelper = new Pokemon_Types_DBHelper();
+    Types_DBHelper types_DBHelper = new Types_DBHelper();
     public List<Pokemon> pokemonDB;
 
     private final JTextField pokemonNameField;
@@ -268,43 +275,77 @@ public class AddManualPage extends JFrame {
 
         // Continues if it does not have errors
         if (!hasErrors) {
-            Pokemon newPokemon = pokemonManager.addPokemonForGUI(pokemonName, pokedexNumberInt,
-                    pokemonTypes, pokemonNextEvolutionLevelInt, pokemonWeightBigDecimal,
-                    pokemonHeightBigDecimal, hasPokemonBeenCaughtBoolean, pokedexEntry);
-            pokemonDB.add(newPokemon);
+//            Pokemon newPokemon = pokemonManager.addPokemonForGUI(pokemonName, pokedexNumberInt,
+//                    pokemonTypes, pokemonNextEvolutionLevelInt, pokemonWeightBigDecimal,
+//                    pokemonHeightBigDecimal, hasPokemonBeenCaughtBoolean, pokedexEntry);
+//            pokemonDB.add(newPokemon);
 
-            // Gets the Pokémon information to verify it was entered
-            for (Pokemon pokemon : pokemonDB) {
-                if (pokemon.getPokedexNumber() == pokedexNumberInt) {
-                    String fixedPokedexEntry = pokemon.hasPokedexEntry().replace("&", "&amp;")
-                            .replace("<", "&lt;")
-                            .replace(">", "&gt;");
-
-                    if (fixedPokedexEntry.isEmpty()) {
-                        fixedPokedexEntry = "NO POKÉDEX ENTRY";
-                    }
-
-                    // Text with all the Pokémon Information
-                    String setText = "<html><body style='width:345px; font-family:\"SH Pinscher Regular\";'>"
-                            + "Name: " + pokemon.getPokemonName() + " <br>"
-                            + "Pokédex Number: " + pokemon.getPokedexNumber() + " <br>"
-                            + "Type: " + pokemon.getPokemonType() + " <br>"
-                            + "Next Evolution Level: " + pokemon.hasNextEvolution() + "<br>"
-                            + "Weight: " + pokemon.getPokemonWeightKilograms() + "<br>"
-                            + "Height: " + pokemon.getPokemonHeightMeters() + "<br>"
-                            + "Has Pokémon Been Caught: " + pokemon.hasPokemonBeenCaught() + "<br>"
-                            + "Pokédex Entry: <br><div style = 'width: 100%; border: solid 1px " +
-                            "#ff0000'>"
-                            + fixedPokedexEntry + "</div><br></body></html>";
-
-                    // Sends success text and goes to success page.
-                    AddManualSuccessPage addManualSuccessPage =
-                            new AddManualSuccessPage(mainApp, pokemonDB, setText);
-                    mainApp.goToPage(addManualSuccessPage.getMainPanel());
-                }
+            pokemon_DBHelper.insert(pokedexNumberInt, pokemonName, pokemonNextEvolutionLevelInt,
+                    String.valueOf(pokemonWeightBigDecimal), String.valueOf(pokemonHeightBigDecimal),
+                    (hasPokemonBeenCaughtBoolean ? 1 : 0), pokedexEntry, types_DBHelper.getTypeIdByName(primaryType),
+                    types_DBHelper.getTypeIdByName(secondaryType));
             }
+
+            // Query database for the Pokémon with the given Pokédex number
+            ArrayList<ArrayList<Object>> result = pokemon_DBHelper.select(
+                    "*",                         // select all columns
+                    "pokedex_number",            // WHERE field
+                    String.valueOf(pokedexNumberInt), // WHERE value
+                    null,                        // no sort needed
+                    null
+            );
+
+            if (result != null && !result.isEmpty()) {
+                ArrayList<Object> row = result.get(0);
+
+                String name = row.get(1) != null ? row.get(1).toString() : "Unknown";
+                String nextEvoLevel = row.get(2) != null ? row.get(2).toString() : "N/A";
+                String weight = row.get(3) != null ? row.get(3).toString() : "N/A";
+                String height = row.get(4) != null ? row.get(4).toString() : "N/A";
+                String caught = row.get(5) != null ? row.get(5).toString() : "N/A";
+                String enteredPokedexEntry = row.get(6) != null ? row.get(6).toString() : "";
+                String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "";
+                String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "";
+
+
+                String fixedPokedexEntry = enteredPokedexEntry.replace("&", "&amp;")
+                        .replace("<", "&lt;")
+                        .replace(">", "&gt;");
+                if (fixedPokedexEntry.isEmpty()) {
+                    fixedPokedexEntry = "NO POKÉDEX ENTRY";
+                }
+
+                String typeDisplay = "";
+                if (primaryTypeString != "") {
+                    if (secondaryTypeString != "") {
+                        typeDisplay = primaryTypeString + " & " + secondaryTypeString;
+                    } else {
+                        typeDisplay = primaryTypeString;
+                    }
+                }
+
+                // Build HTML text
+                String setText = "<html><body style='width:345px; font-family:\"SH Pinscher Regular\";'>"
+                        + "Name: " + name + " <br>"
+                        + "Pokédex Number: " + pokedexNumberInt + " <br>"
+                        + "Type: " + typeDisplay + " <br>"
+                        + "Next Evolution Level: " + nextEvoLevel + "<br>"
+                        + "Weight: " + weight + "<br>"
+                        + "Height: " + height + "<br>"
+                        + "Has Pokémon Been Caught: " + caught + "<br>"
+                        + "Pokédex Entry: <br><div style='width: 100%; border: solid 1px #ff0000'>"
+                        + fixedPokedexEntry + "</div><br></body></html>";
+
+                // Go to the success page
+                AddManualSuccessPage addManualSuccessPage =
+                        new AddManualSuccessPage(mainApp, null, setText); // you may not need pokemonDB anymore
+                mainApp.goToPage(addManualSuccessPage.getMainPanel());
+            } else {
+                // Pokémon not found in DB
+                JOptionPane.showMessageDialog(null, "Pokémon with number " + pokedexNumberInt + " not found.");
+            }
+
         }
-    }
 
     /* Method Name: Is Digit or Period
      * Purpose: Checks through a string. Checking if each char is either a digit or a period.
