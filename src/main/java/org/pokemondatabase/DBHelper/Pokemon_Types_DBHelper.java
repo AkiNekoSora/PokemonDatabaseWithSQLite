@@ -58,4 +58,27 @@ public class Pokemon_Types_DBHelper extends DBHelper {
 		return super.executeQueryToTable(prepareSQL(fields, whatField, whatValue, sortField, sort));
 	}
 
+	public Integer getTypeIdByName(String typeName) {
+		if (typeName == null || typeName.trim().isEmpty()) {
+			return null;
+		}
+
+		ArrayList<ArrayList<Object>> result = select("type_id", "type_name", typeName, null, null);
+
+		if (result != null && !result.isEmpty() && !result.get(0).isEmpty()) {
+			Object value = result.get(0).get(0);
+			if (value instanceof Number) {
+				return ((Number) value).intValue();
+			} else {
+				try {
+					return Integer.parseInt(value.toString());
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return null;
+	}
+
 }
