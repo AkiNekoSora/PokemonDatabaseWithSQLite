@@ -19,15 +19,13 @@ import org.pokemondatabase.Pokemon;
  *              - getMainPanel - returns the main panel for this page
  */
 public class DeleteSuccessPage extends JPanel {
-    public List<Pokemon> pokemonDB;
     private final JLayeredPane pane;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper and prints the success text
-     * Parameters: MainMenuPage, List of Pokémon
+     * Parameters: MainMenuPage
      */
-    public DeleteSuccessPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
+    public DeleteSuccessPage(MainMenuPage mainApp) {
         GuiHelper helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL

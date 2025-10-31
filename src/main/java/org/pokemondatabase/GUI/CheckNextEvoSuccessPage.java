@@ -20,15 +20,13 @@ import org.pokemondatabase.Pokemon;
  *              - getMainPanel - returns the main panel for this page
  */
 public class CheckNextEvoSuccessPage {
-    public List<Pokemon> pokemonDB;
     private final JLayeredPane pane;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper and prints the success text
-     * Parameters: MainMenuPage, List of Pokémon, successText
+     * Parameters: MainMenuPage, successText
      */
-    public CheckNextEvoSuccessPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage, String successText) {
-        this.pokemonDB = pokemonStorage;
+    public CheckNextEvoSuccessPage(MainMenuPage mainApp, String successText) {
         GuiHelper helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL

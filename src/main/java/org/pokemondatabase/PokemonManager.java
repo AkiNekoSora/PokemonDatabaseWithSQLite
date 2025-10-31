@@ -63,23 +63,6 @@ public class PokemonManager {
      * Parameters: The List that holds all Pokémon
      * Return Value: String
      */
-    public Pokemon addPokemonForGUI(String userPokemonName,
-                                    int pokedexNumber, PokemonTypesManager pokemonTypes,
-                                    Integer nextEvolutionLevel, BigDecimal pokemonWeight,
-                                    BigDecimal pokemonHeight, boolean hasBeenCaught,
-                                    String pokedexEntry) {
-
-        return new Pokemon(userPokemonName, pokedexNumber, pokemonTypes,
-                nextEvolutionLevel, pokemonWeight, pokemonHeight, hasBeenCaught,
-                pokedexEntry);
-    }
-
-    /* Method Name: Add Pokémon Method
-     * Purpose: Lets the user add a Pokémon using the CMI. Calls other methods in this class to
-     *          obtain all Pokémon information using the CLI.
-     * Parameters: The List that holds all Pokémon
-     * Return Value: String
-     */
     public String addPokemon(List<Pokemon> pokemonStorage) {
         System.out.println(text.BLUE + "\nADDING A NEW POKÉMON!");
         System.out.println("---------------------\n" + text.RESET);
@@ -103,7 +86,6 @@ public class PokemonManager {
                 (hasPokemonBeenCaught ? 1 : 0), pokedexEntry,
                 types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType())),
                 types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType())));
-
 
         Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypes,
                 nextEvolutionLevel, pokemonWeightPounds, pokemonHeightMeters, hasPokemonBeenCaught,
@@ -346,6 +328,7 @@ public class PokemonManager {
 
                 ValidationResults returnedList = getPokemonForGUI(pokemonStorage, variables, lineCounter);
 
+                // Creates a new temp list and verifies it is all successful before adding to DB
                 if (returnedList != null) {
                     if (returnedList.getIsSuccess()) {
                         tempPokemonList.add(returnedList.getPokemon());
@@ -363,10 +346,12 @@ public class PokemonManager {
             errorMessage = "Error reading from file: " + e.getMessage();
             isFileValid = false;
         }
+
         // Checks if all Pokémon were entered. If not, it deletes all entries and goes back to
         // the main menu.
         if (isFileValid) {
             int successfulAddPokemonCount = 0;
+            // Adds all Pokémon from temp list to the database
             for (Pokemon pokemon : tempPokemonList) {
                 pokemon_DBHelper.insert(pokemon.getPokedexNumber(), pokemon.getPokemonName(),
                         pokemon.getNextEvolutionLevel(),
@@ -377,6 +362,8 @@ public class PokemonManager {
                         types_DBHelper.getTypeIdByName(String.valueOf(pokemon.getSecondaryType())));
                 successfulAddPokemonCount++;
             }
+
+            // Verifies all have been added
             if (successfulAddPokemonCount == tempPokemonList.size() && successfulPokemonCount == successfulAddPokemonCount) {
                 return new ValidationResults(true, String.valueOf(successfulPokemonCount));
             } else return new ValidationResults(false, "Not all Pokemon have been added. Unknown " +
@@ -519,11 +506,6 @@ public class PokemonManager {
         try {
             tempPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypesList,
                     pokemonNextEvolution, pokemonWeight, pokemonHeight, pokemonIsCaught, pokedexEntry);
-//            pokemon_DBHelper.insert(pokedexNumber, pokemonName, pokemonNextEvolution,
-//                    String.valueOf(pokemonWeight), String.valueOf(pokemonHeight),
-//                    (pokemonIsCaught ? 1 : 0), pokedexEntry,
-//                    types_DBHelper.getTypeIdByName(String.valueOf(primaryType)),
-//                    types_DBHelper.getTypeIdByName(String.valueOf(secondaryType)));
         } catch (InvalidPokedexNumberException | InputMismatchException |
                  NumberFormatException | InvalidPokemonTypeException e) {
             return new ValidationResults(false, "Pokémon was not added to list. Error can be found on line " + lineCounter);

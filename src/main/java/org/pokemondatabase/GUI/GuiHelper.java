@@ -59,6 +59,7 @@ import static java.lang.Integer.parseInt;
  *              - updatePokémonList - Updates the Pokémon List when search is used
  *              - addPokémonList - Creates a Pokémon list using a ScrollPane and calls to get List items
  *              - createPokémonListItem - Creates a single list item
+ *              - convertToPokemonList - converts Database to list
  *              - addLabel - Adds specified text to the panel
  *              - addLabelWithSpecifics - add specified text to the panel (Specify font and size)
  *              - addLabelWithImage - Add a text label with an image using addImageScaled
@@ -70,6 +71,8 @@ import static java.lang.Integer.parseInt;
  *              - addImageScaled - Scaled an image to the text
  *              - addImageIcon - Add an image to the panel
  *              - addTextBackgroundImage - Add image to the background
+ *              - isDigit - Verifies it is a digit
+ *              - isDigitOrPeriod - verifies it is a digit or period
  */
 public class GuiHelper {
     private MainMenuPage mainApp;
@@ -328,9 +331,15 @@ public class GuiHelper {
         return panel;
     }
 
+    /* Method Name: convertToPokémonList
+     * Purpose: Calls the list of Pokémon in the database and creates a List<Pokémon> out of it.
+     * Parameters: ArrayList<ArrayList<Object>> from the database
+     * Return Value: List<Pokémon> of the database Pokémon
+     */
     public List<Pokemon> convertToPokemonList(ArrayList<ArrayList<Object>> pokemonDatabase) {
         List<Pokemon> convertedList = new ArrayList<>();
 
+        // Goes through each row and creates a new Pokémon out of it.
         for (ArrayList<Object> row : pokemonDatabase) {
             int pokedexNumber = parseInt(row.get(0).toString());
             String pokemonName = row.get(1).toString();
@@ -348,6 +357,7 @@ public class GuiHelper {
             String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "0";
             String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "0";
 
+            // Converts the Type to the type class
             PokemonTypes primaryType;
             if (primaryTypeString != null && !primaryTypeString.isEmpty()) {
                 primaryType = PokemonTypes.fromString(
@@ -357,6 +367,8 @@ public class GuiHelper {
                 primaryType = null;
             }
 
+            // Checks to see if there is a second type. Makes it null if there isn't, converts it
+            // to a Type if it exists
             PokemonTypes secondaryType = null;
             if (secondaryTypeString != null || secondaryTypeString != "null") {
                 if (!secondaryTypeString.isEmpty()
@@ -365,6 +377,7 @@ public class GuiHelper {
                 }
             }
 
+            // Converts both types to PokemonTypesManager
             PokemonTypesManager pokemonTypes;
              if (secondaryType != null) {
                 pokemonTypes = new PokemonTypesManager(primaryType, secondaryType);
@@ -372,7 +385,7 @@ public class GuiHelper {
                  pokemonTypes = new PokemonTypesManager(primaryType);
              }
 
-            // Create Pokemon object
+            // Creates the Pokémon and adds to the new list.
             Pokemon pokemon = new Pokemon(
                     pokemonName, pokedexNumber, pokemonTypes, nextEvoLevel,
                     pokemonWeight, pokemonHeight, hasBeenCaught, pokedexEntry
@@ -593,6 +606,26 @@ public class GuiHelper {
      */
     public void addTextBackgroundImage(String imagePath, int x, int y, int width, int height) {
         foregroundPanel.add(addImageScaled(imagePath, x, y, width, height));
+    }
+
+    /* Method Name: Is Digit
+     * Purpose: Checks through a string. Checking if each char is either a digit.
+     *          Returns true if all are either a digit.
+     * Parameters: String to check
+     * Return Value: boolean
+     */
+    public boolean isDigit(String input) {
+        return input.chars().allMatch(Character::isDigit);
+    }
+
+    /* Method Name: Is Digit or Period
+     * Purpose: Checks through a string. Checking if each char is either a digit or a period.
+     *          Returns true if all are either a digit or period.
+     * Parameters: String to check
+     * Return Value: boolean
+     */
+    public boolean isDigitOrPeriod(String input) {
+        return input.chars().allMatch(c -> Character.isDigit(c) || c == '.');
     }
 
 }

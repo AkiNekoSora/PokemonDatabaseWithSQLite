@@ -20,15 +20,13 @@ import org.pokemondatabase.Pokemon;
  *              - getMainPanel - returns the main panel for this page
  */
 public class AddFileSuccessPage {
-    public List<Pokemon> pokemonDB;
     private final JLayeredPane pane;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
-     * Parameters: MainMenuPage, List of Pokémon, lineCounter as a string
+     * Parameters: MainMenuPage, lineCounter as a string
      */
-    public AddFileSuccessPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage, String successfulLines) {
-        this.pokemonDB = pokemonStorage;
+    public AddFileSuccessPage(MainMenuPage mainApp, String successfulLines) {
         GuiHelper helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL

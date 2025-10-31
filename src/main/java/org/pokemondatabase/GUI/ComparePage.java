@@ -91,10 +91,10 @@ public class ComparePage extends JFrame {
         if (firstPokedexNumber.isEmpty()) {
             errorLabelFirstPokeNumer.setText("First Pokédex Number Required.");
             hasErrors = true;
-        } else if (!isDigit(firstPokedexNumber)) {
+        } else if (!helper.isDigit(firstPokedexNumber)) {
             errorLabelFirstPokeNumer.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        } else if(isDigit(firstPokedexNumber)) {
+        } else if(helper.isDigit(firstPokedexNumber)) {
             firstPokedexNumberInt = Integer.parseInt(firstPokedexNumber);
         }
 
@@ -102,10 +102,10 @@ public class ComparePage extends JFrame {
         if (secondPokedexNumber.isEmpty()) {
             errorLabelSecondPokeNumber.setText("Second Pokédex Number Required.");
             hasErrors = true;
-        } else if (!isDigit(secondPokedexNumber)) {
+        } else if (!helper.isDigit(secondPokedexNumber)) {
             errorLabelSecondPokeNumber.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        } else if(isDigit(secondPokedexNumber)) {
+        } else if(helper.isDigit(secondPokedexNumber)) {
             secondPokedexNumberInt = Integer.parseInt(secondPokedexNumber);
         } else if (firstPokedexNumberInt == secondPokedexNumberInt) {
             errorLabelSecondPokeNumber.setText("Pokédex numbers cannot be the same.");
@@ -116,18 +116,20 @@ public class ComparePage extends JFrame {
         if (!hasErrors) {
             ArrayList<ArrayList<Object>> selectPokemonList = pokemon_DBHelper.select("*",
                     "pokedex_number", String.valueOf(firstPokedexNumberInt), null, null);
-            firstPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
-
-            selectPokemonList = pokemon_DBHelper.select("*",
-                    "pokedex_number", String.valueOf(secondPokedexNumberInt), null, null);
-            secondPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
 
             // VERIFIES BOTH POKÉMON EXIST
-            if (firstPokemon == null) {
+            if (selectPokemonList != null && !selectPokemonList.isEmpty()) {
+                firstPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
+            } else {
                 errorLabelFirstPokeNumer.setText("No Pokémon Exists with this Pokédex Number");
                 hasErrors = true;
             }
-            if (secondPokemon == null) {
+
+            selectPokemonList = pokemon_DBHelper.select("*",
+                    "pokedex_number", String.valueOf(secondPokedexNumberInt), null, null);
+            if (selectPokemonList != null && !selectPokemonList.isEmpty()) {
+                secondPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
+            } else {
                 errorLabelSecondPokeNumber.setText("No Pokémon Exists with this Pokédex Number");
                 hasErrors = true;
             }
@@ -174,21 +176,11 @@ public class ComparePage extends JFrame {
                 }
 
                 // Sends success text and goes to success page.
-                CompareSuccessPage compareSuccessPage = new CompareSuccessPage(mainApp, pokemonDB
-                        , pokemonComparisonResults.toString());
+                CompareSuccessPage compareSuccessPage = new CompareSuccessPage(mainApp,
+                        pokemonComparisonResults.toString());
                 mainApp.goToPage(compareSuccessPage.getMainPanel());
             }
         }
-    }
-
-    /* Method Name: Is Digit
-     * Purpose: Checks through a string. Checking if each char is either a digit.
-     *          Returns true if all are either a digit.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigit(String input) {
-        return input.chars().allMatch(Character::isDigit);
     }
 
     /* Method Name: getMainPanel

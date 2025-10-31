@@ -100,16 +100,17 @@ public class CheckNextEvoPage extends JFrame {
         if (pokedexNumber.isEmpty()) {
             errorLabelPokeNumber.setText("Pokédex Number Required.");
             hasErrors = true;
-        } else if (!isDigit(pokedexNumber)) {
+        } else if (!helper.isDigit(pokedexNumber)) {
             errorLabelPokeNumber.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        } else if(isDigit(pokedexNumber)) {
+        } else if(helper.isDigit(pokedexNumber)) {
             pokedexNumberInt = Integer.parseInt(pokedexNumber);
 
             selectPokemonList = pokemon_DBHelper.select("*",
             "pokedex_number", String.valueOf(pokedexNumberInt), null, null);
-            selectPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
-            if (selectPokemon == null) {
+            if (selectPokemonList != null && !selectPokemonList.isEmpty()) {
+                selectPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);
+            } else {
                 errorLabelPokeNumber.setText("No Pokémon Exists with this Pokédex Number");
                 hasErrors = true;
             }
@@ -120,10 +121,10 @@ public class CheckNextEvoPage extends JFrame {
             errorLabelCurrentLevel.setText("Current Level Required.");
             hasErrors = true;
         }
-        else if (!isDigit(currentLevel)) {
+        else if (!helper.isDigit(currentLevel)) {
             errorLabelCurrentLevel.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        } else if(isDigit(currentLevel)) {
+        } else {
             currentLevelInt = Integer.parseInt(currentLevel);
 
             if (currentLevelInt <= 0 || currentLevelInt > 100) {
@@ -134,48 +135,38 @@ public class CheckNextEvoPage extends JFrame {
 
         // CONTINUE IF NO ERRORS FOUND
         if (!hasErrors) {
-            // CONTINUE IF NO ERRORS FOUND
-            if (!hasErrors) {
-                Integer nextEvolutionLevel = selectPokemon.getNextEvolutionLevel();
-                // Checks if the Pokémon has a next Evolution
-                if (nextEvolutionLevel == null || nextEvolutionLevel == 0) {
-                    pokemonEvolutionResults.append("<h2 style='font-size:35pt;'>").append
-                            ("Pokémon does not have a next evolution level!</h2></body></html>");
+            Integer nextEvolutionLevel = selectPokemon.getNextEvolutionLevel();
+
+            // Checks if the Pokémon has a next Evolution
+            if (nextEvolutionLevel == null || nextEvolutionLevel == 0) {
+                pokemonEvolutionResults.append("<h2 style='font-size:35pt;'>").append
+                        ("Pokémon does not have a next evolution level!</h2></body></html>");
+            } else {
+                pokemonEvolutionResults.append("<h2 style='font-size:35pt;'>NEXT EVOLUTION " +
+                        "RESULTS:</h2>");
+
+                // Compares current level versus next evolution level and adds to result string
+                if (currentLevelInt >= nextEvolutionLevel) {
+                    pokemonEvolutionResults.append("Current level " +
+                            "exceeds or equals the next evolution level!</body></html>");
                 } else {
-                    pokemonEvolutionResults.append("<h2 style='font-size:35pt;'>NEXT EVOLUTION " +
-                            "RESULTS:</h2>");
-                    // Compares current level versus next evolution level and adds to result string
-                    if (currentLevelInt >= nextEvolutionLevel) {
-                        pokemonEvolutionResults.append("Current level " +
-                                "exceeds or equals the next evolution level!</body></html>");
-                    } else {
-                        int evolutionLevelDiff = nextEvolutionLevel - currentLevelInt;
-                        String isOrAre = evolutionLevelDiff == 1 ? " is " : " are ";
+                    int evolutionLevelDiff = nextEvolutionLevel - currentLevelInt;
+                    String isOrAre = evolutionLevelDiff == 1 ? " is " : " are ";
 
-                        pokemonEvolutionResults.append("There ").append(isOrAre)
-                                .append(evolutionLevelDiff).append(" evolution levels until ")
-                                .append(selectPokemon.getPokemonName()).append(" evolves.<br>")
-                                .append(selectPokemon.getPokemonName()).append(" evolves at level: ")
-                                .append(selectPokemon.getNextEvolutionLevel()).append("</body></html>");
-                    }
+                    pokemonEvolutionResults.append("There ").append(isOrAre)
+                            .append(evolutionLevelDiff).append(" evolution levels until ")
+                            .append(selectPokemon.getPokemonName()).append(" evolves.<br>")
+                            .append(selectPokemon.getPokemonName()).append(" evolves at level: ")
+                            .append(selectPokemon.getNextEvolutionLevel()).append("</body></html>");
                 }
-
-                // Sends success text and goes to success page
-                CheckNextEvoSuccessPage checkNextEvoSuccessPage =
-                        new CheckNextEvoSuccessPage(mainApp, pokemonDB, pokemonEvolutionResults.toString());
-                mainApp.goToPage(checkNextEvoSuccessPage.getMainPanel());
             }
-        }
-    }
 
-    /* Method Name: Is Digit
-     * Purpose: Checks through a string. Checking if each char is either a digit.
-     *          Returns true if all are either a digit.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigit(String input) {
-        return input.chars().allMatch(Character::isDigit);
+            // Sends success text and goes to success page
+            CheckNextEvoSuccessPage checkNextEvoSuccessPage =
+                    new CheckNextEvoSuccessPage(mainApp, pokemonEvolutionResults.toString());
+            mainApp.goToPage(checkNextEvoSuccessPage.getMainPanel());
+
+        }
     }
 
     /* Method Name: getMainPanel

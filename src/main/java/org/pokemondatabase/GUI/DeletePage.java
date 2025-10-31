@@ -42,7 +42,7 @@ public class DeletePage extends JPanel {
         // DELETES THE POKÉMON AND MOVES TO SUCCESS PAGE
         deleteButton.addActionListener(e -> {
             pokemon_DBHelper.delete("pokedex_number", String.valueOf(pokemon.getPokedexNumber()));
-            mainApp.goToPage(new DeleteSuccessPage(mainApp, pokemonDB).getMainPanel());
+            mainApp.goToPage(new DeleteSuccessPage(mainApp).getMainPanel());
         });
 
         // BUILDS BACK BUTTON AND HANDLES WHEN IT IS SELECTED

@@ -90,7 +90,7 @@ public class AddFilePage extends JFrame {
                 // to the success
                 if (fileAddResponse.getIsSuccess()) {
                     AddFileSuccessPage fileOrManualScreen = new AddFileSuccessPage(mainApp,
-                            pokemonDB, fileAddResponse.getResultString());
+                            fileAddResponse.getResultString());
                     mainApp.goToPage(fileOrManualScreen.getMainPanel());
                 } else {
                     errorFilePath.setText(fileAddResponse.getResultString());

@@ -2,7 +2,6 @@ package org.pokemondatabase.GUI;
 
 import java.awt.Color;
 import java.awt.Container;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 import static java.lang.Integer.parseInt;
@@ -44,8 +42,10 @@ public class ListPage {
      * Parameters: MainMenuPage, List of Pokémon
      */
     public ListPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemon_DBHelper.select("*", null, null, "pokedex_number", "ASC");
         GuiHelper helper = new GuiHelper(mainApp);
+
+        // Gets all Pokémon from Database and converts to a list
+        this.pokemonDB = pokemon_DBHelper.select("*", null, null, "pokedex_number", "ASC");
         List<Pokemon> convertedPokemonList = helper.convertToPokemonList(pokemonDB);
 
         // BUILDS BASE PANEL
@@ -123,7 +123,7 @@ public class ListPage {
         });
     }
 
-        /* Method Name: Is Digit
+    /* Method Name: Is Digit
      * Purpose: Checks through a string. Checking if each char is either a digit.
      *          Returns true if all are either a digit.
      * Parameters: String to check

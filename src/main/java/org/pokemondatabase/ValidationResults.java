@@ -1,7 +1,5 @@
 package org.pokemondatabase;
 
-import java.util.List;
-
 /*
  * Autumn Skye
  * CEN-3024C 13950

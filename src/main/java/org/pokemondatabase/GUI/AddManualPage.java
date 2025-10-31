@@ -28,6 +28,7 @@ import org.pokemondatabase.DBHelper.Types_DBHelper;
  *              - getMainPanel - returns the main panel for this page
  */
 public class AddManualPage extends JFrame {
+    GuiHelper helper;
     private final JLayeredPane pane;
     private final PokemonManager pokemonManager = new PokemonManager();
     Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
@@ -58,7 +59,7 @@ public class AddManualPage extends JFrame {
      */
     public AddManualPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
         this.pokemonDB = pokemonStorage;
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("ADD POKÉMON", "/addPokemonPage.jpg");
@@ -153,7 +154,6 @@ public class AddManualPage extends JFrame {
         boolean hasErrors = false;
 
         int pokedexNumberInt = 0;
-        PokemonTypesManager pokemonTypes = null;
         Integer pokemonNextEvolutionLevelInt = null;
         BigDecimal pokemonWeightBigDecimal = null;
         BigDecimal pokemonHeightBigDecimal = null;
@@ -183,10 +183,10 @@ public class AddManualPage extends JFrame {
         if (pokedexNumber.isEmpty()) {
             errorLabelPokedexNumber.setText("Pokédex Number Required.");
             hasErrors = true;
-        } else if (!isDigit(pokedexNumber)) {
+        } else if (!helper.isDigit(pokedexNumber)) {
             errorLabelPokedexNumber.setText("Can only contain Digits.");
             hasErrors = true;
-        } else if(isDigit(pokedexNumber)) {
+        } else if(helper.isDigit(pokedexNumber)) {
             pokedexNumberInt = Integer.parseInt(pokedexNumber);
 
             // CHECKS FOR UNIQUE POKÉDEX NUMBER
@@ -209,26 +209,15 @@ public class AddManualPage extends JFrame {
         } else if (primaryType.equalsIgnoreCase(secondaryType)) {
             errorLabelPokemonTypes.setText("Types cannot be the same.");
             hasErrors = true;
-        } else {
-            // Fixes the types
-            PokemonTypes primaryTypeFixed = PokemonTypes.valueOf(primaryType.toUpperCase());
-            PokemonTypes secondaryTypeFixed = null;
-
-            assert secondaryType != null;
-            if (!(secondaryType.isEmpty())) {
-                secondaryTypeFixed = PokemonTypes.valueOf(secondaryType.toUpperCase());
-            }
-
-            pokemonTypes = new PokemonTypesManager(primaryTypeFixed, secondaryTypeFixed);
         }
 
         // NEXT EVOLUTION LEVEL ERROR CHECKER
         if (pokemonNextEvolutionLevel.isEmpty()) {
             pokemonNextEvolutionLevelInt = null;
-        } else if (!isDigit(pokemonNextEvolutionLevel)) {
+        } else if (!helper.isDigit(pokemonNextEvolutionLevel)) {
             errorLabelNextEvo.setText("Can only contain Digits.");
             hasErrors = true;
-        }  else if(isDigit(pokemonNextEvolutionLevel)) {
+        } else {
             pokemonNextEvolutionLevelInt = Integer.valueOf(pokemonNextEvolutionLevel);
 
             if (pokemonNextEvolutionLevelInt < 1 || pokemonNextEvolutionLevelInt > 99) {
@@ -241,10 +230,10 @@ public class AddManualPage extends JFrame {
         if (pokemonWeight.isEmpty()) {
             errorLabelWeight.setText("Weight Required.");
             hasErrors = true;
-        } else if (!isDigitOrPeriod(pokemonWeight)) {
+        } else if (!helper.isDigitOrPeriod(pokemonWeight)) {
             errorLabelWeight.setText("Invalid Weight.");
             hasErrors = true;
-        } else if(isDigitOrPeriod(pokemonWeight)) {
+        } else {
             pokemonWeightBigDecimal = BigDecimal.valueOf(Double.parseDouble(weightField.getText().trim()));
         }
 
@@ -252,10 +241,10 @@ public class AddManualPage extends JFrame {
         if (pokemonHeight.isEmpty()) {
             errorLabelHeight.setText("Height Required.");
             hasErrors = true;
-        } else if (!isDigitOrPeriod(pokemonHeight)) {
+        } else if (!helper.isDigitOrPeriod(pokemonHeight)) {
             errorLabelHeight.setText("Invalid Height.");
             hasErrors = true;
-        } else if(isDigitOrPeriod(pokemonHeight)) {
+        } else  {
             pokemonHeightBigDecimal = BigDecimal.valueOf(Double.parseDouble(heightField.getText().trim()));
         }
 
@@ -282,18 +271,14 @@ public class AddManualPage extends JFrame {
                     types_DBHelper.getTypeIdByName(secondaryType));
 
 
-            // Query database for the Pokémon with the given Pokédex number
+            // Get the Pokémon from the database to verify it exists.
             ArrayList<ArrayList<Object>> result = pokemon_DBHelper.select(
-                    "*",                         // select all columns
-                    "pokedex_number",            // WHERE field
-                    String.valueOf(pokedexNumberInt), // WHERE value
-                    null,                        // no sort needed
-                    null
-            );
+                    "*", "pokedex_number", String.valueOf(pokedexNumberInt), null, null);
 
             if (result != null && !result.isEmpty()) {
                 ArrayList<Object> row = result.get(0);
 
+                // Converts all items into their own variables
                 String name = row.get(1) != null ? row.get(1).toString() : "Unknown";
                 String nextEvoLevel = row.get(2) != null ? row.get(2).toString() : "N/A";
                 String weight = row.get(3) != null ? row.get(3).toString() : "N/A";
@@ -303,7 +288,7 @@ public class AddManualPage extends JFrame {
                 String primaryTypeString = row.get(7) != null ? row.get(7).toString() : "0";
                 String secondaryTypeString = row.get(8) != null ? row.get(8).toString() : "0";
 
-
+                // Fixes the Pokédex entry
                 String fixedPokedexEntry = enteredPokedexEntry.replace("&", "&amp;")
                         .replace("<", "&lt;")
                         .replace(">", "&gt;");
@@ -311,6 +296,7 @@ public class AddManualPage extends JFrame {
                     fixedPokedexEntry = "NO POKÉDEX ENTRY";
                 }
 
+                // Fixes how the second type is displayed
                 String typeDisplay = "";
                 if (primaryTypeString != "") {
                     if (secondaryTypeString != "" && !Objects.equals(secondaryTypeString, "0")) {
@@ -321,7 +307,7 @@ public class AddManualPage extends JFrame {
                     }
                 }
 
-                // Build HTML text
+                // Building HTML
                 String setText = "<html><body style='width:345px; font-family:\"SH Pinscher Regular\";'>"
                         + "Name: " + name + " <br>"
                         + "Pokédex Number: " + pokedexNumberInt + " <br>"
@@ -333,36 +319,15 @@ public class AddManualPage extends JFrame {
                         + "Pokédex Entry: <br><div style='width: 100%; border: solid 1px #ff0000'>"
                         + fixedPokedexEntry + "</div><br></body></html>";
 
-                // Go to the success page
                 AddManualSuccessPage addManualSuccessPage =
-                        new AddManualSuccessPage(mainApp, null, setText); // you may not need pokemonDB anymore
+                        new AddManualSuccessPage(mainApp, setText);
                 mainApp.goToPage(addManualSuccessPage.getMainPanel());
             } else {
-                // Pokémon not found in DB
+                // Pokémon not found in database
                 JOptionPane.showMessageDialog(null, "Pokémon with number " + pokedexNumberInt + " not found.");
             }
         }
 
-    }
-
-    /* Method Name: Is Digit or Period
-     * Purpose: Checks through a string. Checking if each char is either a digit or a period.
-     *          Returns true if all are either a digit or period.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigitOrPeriod(String input) {
-        return input.chars().allMatch(c -> Character.isDigit(c) || c == '.');
-    }
-
-    /* Method Name: Is Digit
-     * Purpose: Checks through a string. Checking if each char is either a digit.
-     *          Returns true if all are either a digit.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigit(String input) {
-        return input.chars().allMatch(Character::isDigit);
     }
 
     /* Method Name: getMainPanel

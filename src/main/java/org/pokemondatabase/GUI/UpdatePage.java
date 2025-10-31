@@ -30,6 +30,7 @@ import org.pokemondatabase.DBHelper.Types_DBHelper;
 public class UpdatePage extends JFrame {
     private final PokemonManager pokemonManager = new PokemonManager();
     public List<Pokemon> pokemonDB;
+    GuiHelper helper;
     Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
     Types_DBHelper types_DBHelper = new Types_DBHelper();
 
@@ -59,7 +60,7 @@ public class UpdatePage extends JFrame {
      */
     public UpdatePage(MainMenuPage mainApp, Pokemon updatedPokemon, List<Pokemon> pokemonStorage) {
         this.pokemonDB = pokemonStorage;
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
         pane = helper.createBasePanel("EDIT POKÉMON", "/addPokemonPage.jpg");
 
 
@@ -214,10 +215,10 @@ public class UpdatePage extends JFrame {
         if (pokedexNumber.isEmpty()) {
             errorLabelPokedexNumber.setText("Pokédex Number Required.");
             hasErrors = true;
-        } else if (!isDigit(pokedexNumber)) {
+        } else if (!helper.isDigit(pokedexNumber)) {
             errorLabelPokedexNumber.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        } else if(isDigit(pokedexNumber)) {
+        } else {
             pokedexNumberInt = Integer.parseInt(pokedexNumber);
 
             // CHECKS FOR UNIQUE POKÉDEX NUMBER
@@ -265,10 +266,10 @@ public class UpdatePage extends JFrame {
         // NEXT EVOLUTION LEVEL ERROR CHECKER
         if (pokemonNextEvolutionLevel.isEmpty()) {
             pokemonNextEvolutionLevelInt = null;
-        } else if (!isDigit(pokemonNextEvolutionLevel)) {
+        } else if (!helper.isDigit(pokemonNextEvolutionLevel)) {
             errorLabelNextEvo.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        }  else if(isDigit(pokemonNextEvolutionLevel)) {
+        }  else if(helper.isDigit(pokemonNextEvolutionLevel)) {
             pokemonNextEvolutionLevelInt = Integer.valueOf(pokemonNextEvolutionLevel);
 
             if (pokemonNextEvolutionLevelInt < 1 || pokemonNextEvolutionLevelInt > 99) {
@@ -281,10 +282,10 @@ public class UpdatePage extends JFrame {
         if (pokemonWeight.isEmpty()) {
             errorLabelWeight.setText("Weight Required.");
             hasErrors = true;
-        } else if (!isDigitOrPeriod(pokemonWeight)) {
+        } else if (!helper.isDigitOrPeriod(pokemonWeight)) {
             errorLabelWeight.setText("Invalid Weight.");
             hasErrors = true;
-        } else if(isDigitOrPeriod(pokemonWeight)) {
+        } else {
             pokemonWeightBigDecimal = BigDecimal.valueOf(Double.parseDouble(weightField.getText().trim()));
         }
 
@@ -292,10 +293,10 @@ public class UpdatePage extends JFrame {
         if (pokemonHeight.isEmpty()) {
             errorLabelHeight.setText("Height Required.");
             hasErrors = true;
-        } else if (!isDigitOrPeriod(pokemonHeight)) {
+        } else if (!helper.isDigitOrPeriod(pokemonHeight)) {
             errorLabelHeight.setText("Invalid Height.");
             hasErrors = true;
-        } else if(isDigitOrPeriod(pokemonHeight)) {
+        } else {
             pokemonHeightBigDecimal = BigDecimal.valueOf(Double.parseDouble(heightField.getText().trim()));
         }
 
@@ -315,7 +316,7 @@ public class UpdatePage extends JFrame {
         // IF NO ERRORS FOUND, CONTINUE, UPDATE POKÉMON AND GO BACK TO POKÉMON INFO PAGE
         if (!hasErrors) {
             pokemon_DBHelper.updateAll(String.valueOf(pokedexNumberInt), pokemonName,
-                    String.valueOf(pokedexNumberInt), pokemonWeight, pokemonHeight,
+                    String.valueOf(pokemonNextEvolutionLevelInt), pokemonWeight, pokemonHeight,
                     (hasPokemonBeenCaughtBoolean ? "1" : "0"), pokedexEntry,
                     String.valueOf(types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType()))),
                     String.valueOf(types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType()))),
@@ -335,26 +336,6 @@ public class UpdatePage extends JFrame {
         }
 
 
-    }
-
-    /* Method Name: Is Digit or Period
-     * Purpose: Checks through a string. Checking if each char is either a digit or a period.
-     *          Returns true if all are either a digit or period.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigitOrPeriod(String input) {
-        return input.chars().allMatch(c -> Character.isDigit(c) || c == '.');
-    }
-
-    /* Method Name: Is Digit
-     * Purpose: Checks through a string. Checking if each char is either a digit.
-     *          Returns true if all are either a digit.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigit(String input) {
-        return input.chars().allMatch(Character::isDigit);
     }
 
     /* Method Name: getMainPanel
