@@ -3,14 +3,12 @@ package org.pokemondatabase.GUI;
 import java.awt.Container;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JTextField;
 
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 /*

@@ -4,9 +4,6 @@ import java.awt.Container;
 import java.util.List;
 import javax.swing.*;
 
-import org.pokemondatabase.DBHelper.DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 /*

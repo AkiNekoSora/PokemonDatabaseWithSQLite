@@ -2,15 +2,11 @@ package org.pokemondatabase.GUI;
 
 import java.awt.Container;
 import java.awt.event.ActionEvent;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
 import org.pokemondatabase.DBHelper.DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
-import org.pokemondatabase.Pokemon;
 
 /*
  * Autumn Skye
@@ -65,7 +61,7 @@ public class MainMenuPage extends JFrame {
         if (this.db == null) {
             this.db = new DBHelper();
         }
-        
+
         if (!this.db.connected) {
             this.goToPage(new ChooseDBPage(this).getMainPanel());
         }

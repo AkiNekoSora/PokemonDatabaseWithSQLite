@@ -7,9 +7,6 @@ import java.util.Objects;
 import javax.swing.*;
 
 import org.pokemondatabase.*;
-import org.pokemondatabase.DBHelper.DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 
 /*
  * Autumn Skye

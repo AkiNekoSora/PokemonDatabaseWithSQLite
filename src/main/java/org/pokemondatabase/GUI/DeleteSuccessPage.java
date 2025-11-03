@@ -1,7 +1,6 @@
 package org.pokemondatabase.GUI;
 
 import java.awt.Container;
-import java.util.List;
 
 import javax.swing.*;
 

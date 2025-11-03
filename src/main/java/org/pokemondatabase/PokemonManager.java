@@ -9,8 +9,6 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Objects;
 
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.GUI.MainMenuPage;
 import org.pokemondatabase.exceptions.InvalidPokedexNumberException;
 import org.pokemondatabase.exceptions.InvalidPokemonTypeException;

@@ -2,14 +2,12 @@ package org.pokemondatabase.GUI;
 
 import java.awt.Container;
 import java.io.File;
-import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 
-import org.pokemondatabase.Pokemon;
 import org.pokemondatabase.PokemonManager;
 import org.pokemondatabase.ValidationResults;
 

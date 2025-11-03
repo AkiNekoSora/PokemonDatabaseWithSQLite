@@ -1,8 +1,5 @@
 package org.pokemondatabase.GUI;
 
-import org.pokemondatabase.DBHelper.DBHelper;
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 import javax.swing.*;
