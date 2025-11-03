@@ -36,7 +36,6 @@ public class MainMenuPage extends JFrame {
     private final JButton checkNextEvolutionButton;
 
     public DBHelper db;
-    GuiHelper helper = new GuiHelper(this);
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
@@ -66,6 +65,7 @@ public class MainMenuPage extends JFrame {
         if (this.db == null) {
             this.db = new DBHelper();
         }
+        System.out.println(this.db.connected);
         if (!this.db.connected) {
             this.goToPage(new ChooseDBPage(this).getMainPanel());
         }

@@ -41,7 +41,6 @@ public class PokemonManager {
     public UserInputHelper userInputHelper;
     private final Text text;
     private final PokemonTypes pokemonTypes;
-    MainMenuPage mainApp = new MainMenuPage();
 
     // Constructor used to bring the userInputHelper and Text classes into scope.
     public PokemonManager() {
