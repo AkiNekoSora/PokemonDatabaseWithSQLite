@@ -1,4 +1,4 @@
-Module Module 10 | DMS Project Phase 4: Adding a Database
+Module 10 | DMS Project Phase 4: Adding a Database
 ==============================================================================
 Autumn Skye
 202610 Software Development I 
