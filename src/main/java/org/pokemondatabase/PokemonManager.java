@@ -41,8 +41,7 @@ public class PokemonManager {
     public UserInputHelper userInputHelper;
     private final Text text;
     private final PokemonTypes pokemonTypes;
-    //Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    //Types_DBHelper types_DBHelper = new Types_DBHelper();
+    MainMenuPage mainApp = new MainMenuPage();
 
     // Constructor used to bring the userInputHelper and Text classes into scope.
     public PokemonManager() {

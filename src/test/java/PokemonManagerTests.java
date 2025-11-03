@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.pokemondatabase.*;
+import org.pokemondatabase.GUI.MainMenuPage;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +27,7 @@ public class PokemonManagerTests {
     // Variables used in the tests
     public PokemonManager pokemonManager;
     public UserInputHelper mockUserInputHelper;
+    public MainMenuPage mainApp = new MainMenuPage();
 
     /* Method Name: set up
      * Purpose: Used before each class to create a mock userInputHelper class that gets sent to
@@ -77,7 +80,7 @@ public class PokemonManagerTests {
         // Verify the Pokémon will be added
         when(mockUserInputHelper.getBooleanInput(contains("add this Pokémon"))).thenReturn(true);
 
-        String result = pokemonManager.addPokemon(pokemonStorage);
+        String result = pokemonManager.addPokemon(pokemonStorage, mainApp);
 
         // Calls the first item in the list and checks to make sure all items match
         Pokemon testPokemon = pokemonStorage.get(0);
@@ -161,7 +164,7 @@ public class PokemonManagerTests {
 
         // Calls the addPokemonFromFile method to add Pokémon list from a file and adds results
         // to a list in this test.
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         assertTrue(result.contains("All Pokémon added successfully!"));
         assertEquals(4, pokemonStorage.size());
@@ -184,7 +187,7 @@ public class PokemonManagerTests {
 
         // Calls the addPokemonFromFile method to add Pokémon list from a file and adds results
         // to a list in this test.
-        pokemonManager.addPokemonFromFile(pokemonStorage);
+        pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enter the Pokédex ID number you would like to remove:
         when(mockUserInputHelper.getInt(contains("Enter"), anyString())).thenReturn(4);
@@ -208,7 +211,7 @@ public class PokemonManagerTests {
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
         // Calls the addPokemonFromFile method to add Pokémon list from a file
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enter the Pokédex ID number you would like to update:
         when(mockUserInputHelper.getInt(contains("Enter"), anyString())).thenReturn(4);
@@ -240,7 +243,7 @@ public class PokemonManagerTests {
         when(mockUserInputHelper.getString(contains("Pokédex Entry")))
                 .thenReturn("If Charizard becomes truly angered, the flame at the tip of its tail burns in a light blue shade.");
 
-        String updateResult = pokemonManager.updatePokemonInformation(pokemonStorage);
+        String updateResult = pokemonManager.updatePokemonInformation(pokemonStorage, mainApp);
 
         assertTrue(updateResult.contains("was updated!"));
         assertEquals("TESTCharmander", pokemonStorage.get(0).getPokemonName());
@@ -266,7 +269,7 @@ public class PokemonManagerTests {
     public void testFindPokemonInList(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Searches for Charmander
         when(mockUserInputHelper.getInt(contains("Enter"), anyString())).thenReturn(4);
@@ -288,7 +291,7 @@ public class PokemonManagerTests {
     public void testComparePokemon(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enters the first and second Pokédex Numbers
         when(mockUserInputHelper.getInt(contains("first"), anyString())).thenReturn(4);
@@ -314,7 +317,7 @@ public class PokemonManagerTests {
     public void testCheckPokemonNextEvolution(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enters the Pokédex Numbers and the current evolution level
         when(mockUserInputHelper.getInt(contains("Pokédex"), anyString())).thenReturn(4);
@@ -339,7 +342,7 @@ public class PokemonManagerTests {
     public void testCheckPokemonNextEvolutionFullyEvolved(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        pokemonManager.addPokemonFromFile(pokemonStorage);
+        pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         when(mockUserInputHelper.getInt(contains("check next Evolution"), anyString()))
                 .thenReturn(6);
@@ -389,7 +392,7 @@ public class PokemonManagerTests {
         // Verify the Pokémon will NOT be added
         when(mockUserInputHelper.getBooleanInput(contains("add this Pokémon"))).thenReturn(false);
 
-        String result = pokemonManager.addPokemon(pokemonStorage);
+        String result = pokemonManager.addPokemon(pokemonStorage, mainApp);
 
         // Verify that the list is empty and the Pokémon was not added.
         assertTrue(pokemonStorage.isEmpty());
@@ -412,7 +415,7 @@ public class PokemonManagerTests {
         when(mockUserInputHelper.errorMessageColors("Pokémon creation cancelled."))
                 .thenReturn("Pokémon creation cancelled.");
 
-        String result = pokemonManager.addPokemon(pokemonStorage);
+        String result = pokemonManager.addPokemon(pokemonStorage, mainApp);
 
         assertEquals("Pokémon creation cancelled.", result);
         assertTrue(pokemonStorage.isEmpty());
@@ -445,7 +448,7 @@ public class PokemonManagerTests {
 
         // Calls the addPokemonFromFile method to add Pokémon list from a file and adds results
         // to a list in this test.
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         assertEquals(mockUserInputHelper.errorMessageColors("Please verify file and try again. " +
                 "Going back to the main Pokémon database menu."), result);
@@ -468,7 +471,7 @@ public class PokemonManagerTests {
 
         // Calls the addPokemonFromFile method to add Pokémon list from a file and adds results
         // to a list in this test.
-        pokemonManager.addPokemonFromFile(pokemonStorage);
+        pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enter the Pokédex ID number you would like to remove:
         when(mockUserInputHelper.getInt(contains("Enter"), anyString())).thenReturn(1165);
@@ -495,14 +498,14 @@ public class PokemonManagerTests {
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
         // Calls the addPokemonFromFile method to add Pokémon list from a file
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enter the Pokédex ID number you would like to update:
         when(mockUserInputHelper.getInt(contains("Enter"), anyString())).thenReturn(4);
         // Please enter a number between 0 and 8 (0 to cancel update): CANCELLED
         when(mockUserInputHelper.getIntInRange(anyString(), eq(0), eq(8))).thenReturn(0);
 
-        String updateResult = pokemonManager.updatePokemonInformation(pokemonStorage);
+        String updateResult = pokemonManager.updatePokemonInformation(pokemonStorage, mainApp);
 
         assertEquals(pokemonManager.successMessageColors("Pokémon update cancelled!"), updateResult);
     }
@@ -520,7 +523,7 @@ public class PokemonManagerTests {
     public void testFindPokemonInListFAIL(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        String result = pokemonManager.addPokemonFromFile(pokemonStorage);
+        String result = pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Searches for a Pokémon that does not exist
         when(mockUserInputHelper.getInt(contains("Enter"), anyString())).thenReturn(1165);
@@ -546,7 +549,7 @@ public class PokemonManagerTests {
     public void testComparePokemonFAIL(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        pokemonManager.addPokemonFromFile(pokemonStorage);
+        pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Enters the first and second Pokédex Numbers
         when(mockUserInputHelper.getInt(contains("first"), anyString())).thenReturn(4);
@@ -574,7 +577,7 @@ public class PokemonManagerTests {
     public void testCheckPokemonNextEvolutionFAIL(){
         List<Pokemon> pokemonStorage = new ArrayList<>();
         pokemonStorage = addPokemonList(pokemonStorage);
-        pokemonManager.addPokemonFromFile(pokemonStorage);
+        pokemonManager.addPokemonFromFile(pokemonStorage, mainApp);
 
         // Gives the system a number that will not contain a Pokémon and does not want to try again.
         when(mockUserInputHelper.getInt(contains("check next Evolution"), anyString())).thenReturn(1165);
