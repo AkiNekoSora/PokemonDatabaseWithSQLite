@@ -65,7 +65,7 @@ public class MainMenuPage extends JFrame {
         if (this.db == null) {
             this.db = new DBHelper();
         }
-        System.out.println(this.db.connected);
+        
         if (!this.db.connected) {
             this.goToPage(new ChooseDBPage(this).getMainPanel());
         }
