@@ -1,103 +1,83 @@
 package org.pokemondatabase.GUI;
 
-import java.awt.Container;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLayeredPane;
-
-import org.pokemondatabase.Pokemon;
+import java.io.File;
 
 /*
  * Autumn Skye
  * CEN-3024C 13950
  * October 22nd, 2025
  *
- * Class Name: MainMenu Page
- * Purpose: Used to let the user choose what they would like to do in the system. Contains
- * buttons to go to FileOrManualAddPage, ListPage, ComparePage, CheckNextEvoPage
+ * Class Name: Choose DB Page
+ * Purpose: Used to let the user choose what database they would like to connect to.
  *          Contains:
  *              - Constructor - Builds the base design using GUI helper
- *              - goToPage -
- *              - getMainMenuLayeredPane -
  *              - getMainPanel - returns the main panel for this page
  */
-public class MainMenuPage extends JFrame {
-
+public class ChooseDBPage extends JFrame {
     private final JLayeredPane pane;
+    private GuiHelper helper;
 
-    private final JButton addPokemonButton;
-    private final JButton pokemonListButton;
-    private final JButton comparePokemonStatsButton;
-    private final JButton checkNextEvolutionButton;
-
-    public List<Pokemon> pokemonDB;
+    private final JButton fileChooserButton;
+    private final JLabel errorFilePath;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
-     * Parameters: List of Pokémon
+     * Parameters: Main App
      */
-    public MainMenuPage(List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
-        GuiHelper helper = new GuiHelper(MainMenuPage.this);
-
-        // SET SIZE OF WINDOW
-        setSize(1000, 750);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+    public ChooseDBPage(MainMenuPage mainApp) {
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
-        pane = helper.createBasePanel("POKÉMON DATABASE",  "/background.jpg");
+        pane = helper.createBasePanel("CHOOSE DATABASE",  "/background.jpg");
 
-        // ADD BUTTONS TO PANEL
-        addPokemonButton = helper.addLargeButton("ADD POKÉMON", 200, 100);
-        pokemonListButton = helper.addLargeButton("POKÉMON LIST", 200, 250);
-        comparePokemonStatsButton = helper.addLargeButton("COMPARE POKÉMON STATS", 200, 400);
-        checkNextEvolutionButton = helper.addLargeButton("CHECK NEXT EVOLUTION", 200, 550);
+        // BUILDS FILE CHOOSE BUTTON AND ERROR LABELS
+        fileChooserButton = helper.addLargeButton("CHOOSE DATABASE", 200, 340);
+        errorFilePath = helper.addErrorLabel(200, 430, 600);
 
-        setContentPane(pane);
-        pack();
-        setVisible(true);
+        // ACTION WHEN FILE CHOOSE BUTTON IS SELECTED
+        fileChooserButton.addActionListener((ActionEvent event) -> {
+            errorFilePath.setText("");
 
-        // ADD BUTTON ACTION
-        addPokemonButton.addActionListener((ActionEvent e) -> {
-            goToPage(new FileOrManualAddPage(this, pokemonDB).getMainPanel());
+            // Opens the file chooser
+            JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
+            int returnVal = fileChooser.showOpenDialog(null);
+
+            // If the user attempts to add a file: get the file location, call addPokemonFrom File
+            // GUI using the path.
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                Boolean successfulDatabaseConnection = true;
+                File selectedFile = fileChooser.getSelectedFile();
+                String path = selectedFile.getAbsolutePath();
+
+                if (path.endsWith(".db") || path.endsWith(".sqlite")) {
+                    try {
+                        mainApp.db.connect(path);
+                    } catch (Exception e) {
+                        errorFilePath.setText("Database connection failed");
+                        successfulDatabaseConnection = false;
+                    }
+                } else {
+                    errorFilePath.setText("Not a valid database. Please choose a database file.");
+                    successfulDatabaseConnection = false;
+                }
+
+                if (successfulDatabaseConnection) {
+                    mainApp.goToPage(mainApp.getMainMenuLayeredPane());
+                }
+            }
         });
 
-        // LIST BUTTON ACTION
-        pokemonListButton.addActionListener((ActionEvent e) -> {
-            goToPage(new ListPage(this, pokemonDB).getMainPanel());
-        });
-
-        // COMPARE BUTTON ACTION
-        comparePokemonStatsButton.addActionListener((ActionEvent e) -> {
-            goToPage(new ComparePage(this, pokemonDB).getMainPanel());
-        });
-
-        // CHECK NEXT EVOLUTION BUTTON ACTION
-        checkNextEvolutionButton.addActionListener((ActionEvent e) -> {
-            goToPage(new CheckNextEvoPage(this, pokemonDB).getMainPanel());
-        });
     }
 
-    /* Method Name: GoToPage
-     * Purpose: When called it rewrites what page is currently displayed to the screen
-     * Parameters: Container of the page
-     * Return Value: void (I am hoping it is okay to return void for the design side!)
-     */
-    public void goToPage(Container page) {
-        this.setContentPane(page);
-        this.revalidate();
-        this.repaint();
-    }
-
-    /* Method Name: getMainMenuLayeredPane
-     * Purpose: returns the main menu layered Panel
+    /* Method Name: getMainPanel
+     * Purpose: used to return the main panel of this page
      * Parameters: NONE
-     * Return Value: JLayeredPane
+     * Return Value: Container(panel)
      */
-    public JLayeredPane getMainMenuLayeredPane() {
+    public Container getMainPanel() {
         return pane;
     }
 

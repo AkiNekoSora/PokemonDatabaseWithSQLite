@@ -32,14 +32,12 @@ public class AddFilePage extends JFrame {
     private final JLayeredPane pane;
     private final JButton fileChooserButton;
     private final JLabel errorFilePath;
-    public List<Pokemon> pokemonDB;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
      * Parameters: MainMenuPage, List of Pokémon
      */
-    public AddFilePage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
+    public AddFilePage(MainMenuPage mainApp) {
         GuiHelper helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
@@ -58,7 +56,7 @@ public class AddFilePage extends JFrame {
         // BUILDS BACK BUTTON AND HANDLES WHEN IT IS SELECTED
         JButton backButton = helper.addSmallButton("BACK", 15, 680);
         backButton.addActionListener(e -> {
-            mainApp.goToPage(new FileOrManualAddPage(mainApp, pokemonDB).getMainPanel());
+            mainApp.goToPage(new FileOrManualAddPage(mainApp).getMainPanel());
         });
     }
 
@@ -83,7 +81,7 @@ public class AddFilePage extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             String path = selectedFile.getAbsolutePath();
 
-            ValidationResults fileAddResponse = pokemonManager.addPokemonFromFileGUI(pokemonDB, path);
+            ValidationResults fileAddResponse = pokemonManager.addPokemonFromFileGUI(path, mainApp);
 
             if (fileAddResponse != null) {
                 // Checks to make sure the addPokemonFromFileGUI was successful and then send it

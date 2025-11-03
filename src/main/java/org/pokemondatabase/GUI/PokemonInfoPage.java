@@ -1,6 +1,8 @@
 package org.pokemondatabase.GUI;
 
+import org.pokemondatabase.DBHelper.DBHelper;
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 import javax.swing.*;
@@ -21,7 +23,6 @@ import java.util.List;
  */
 public class PokemonInfoPage {
     private final JLayeredPane pane;
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
 
     public List<Pokemon> pokemonDB;
 
@@ -89,7 +90,7 @@ public class PokemonInfoPage {
         // ADDS CAUGHT BUTTON AND REFRESHES THE PAGE TO SHOW THE IMAGE
         JButton caughtButton = helper.addMediumButton("CAUGHT", 20, 220);
         caughtButton.addActionListener(e -> {
-            pokemon_DBHelper.updateCaughtStatus(pokemon.getPokemonIsCaught(),
+            mainApp.db.pokemon.updateCaughtStatus(pokemon.getPokemonIsCaught(),
                     String.valueOf(pokemon.getPokedexNumber()));
             pokemon.setPokemonIsCaught(!pokemon.getPokemonIsCaught());
             mainApp.goToPage(new PokemonInfoPage(mainApp, pokemon, pokemonDB).getMainPanel());
@@ -104,7 +105,7 @@ public class PokemonInfoPage {
         // ADDS BACK BUTTON AND SENDS BACK TO LIST PAGE IF CLICKED
         JButton backButton = helper.addSmallButton("BACK", 20, 685);
         backButton.addActionListener(e -> {
-            mainApp.goToPage(new ListPage(mainApp, pokemonDB).getMainPanel());
+            mainApp.goToPage(new ListPage(mainApp).getMainPanel());
         });
     }
 

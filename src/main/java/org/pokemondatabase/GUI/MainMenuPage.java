@@ -7,6 +7,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 
+import org.pokemondatabase.DBHelper.DBHelper;
+import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
+import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 /*
@@ -32,14 +35,14 @@ public class MainMenuPage extends JFrame {
     private final JButton comparePokemonStatsButton;
     private final JButton checkNextEvolutionButton;
 
-    public List<Pokemon> pokemonDB;
+    public DBHelper db;
+    GuiHelper helper = new GuiHelper(this);
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
      * Parameters: List of Pokémon
      */
-    public MainMenuPage(List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
+    public MainMenuPage() {
         GuiHelper helper = new GuiHelper(MainMenuPage.this);
 
         // SET SIZE OF WINDOW
@@ -60,24 +63,31 @@ public class MainMenuPage extends JFrame {
         pack();
         setVisible(true);
 
+        if (this.db == null) {
+            this.db = new DBHelper();
+        }
+        if (!this.db.connected) {
+            this.goToPage(new ChooseDBPage(this).getMainPanel());
+        }
+
         // ADD BUTTON ACTION
         addPokemonButton.addActionListener((ActionEvent e) -> {
-            goToPage(new FileOrManualAddPage(this, pokemonDB).getMainPanel());
+            goToPage(new FileOrManualAddPage(this).getMainPanel());
         });
 
         // LIST BUTTON ACTION
         pokemonListButton.addActionListener((ActionEvent e) -> {
-            goToPage(new ListPage(this, pokemonDB).getMainPanel());
+            goToPage(new ListPage(this).getMainPanel());
         });
 
         // COMPARE BUTTON ACTION
         comparePokemonStatsButton.addActionListener((ActionEvent e) -> {
-            goToPage(new ComparePage(this, pokemonDB).getMainPanel());
+            goToPage(new ComparePage(this).getMainPanel());
         });
 
         // CHECK NEXT EVOLUTION BUTTON ACTION
         checkNextEvolutionButton.addActionListener((ActionEvent e) -> {
-            goToPage(new CheckNextEvoPage(this, pokemonDB).getMainPanel());
+            goToPage(new CheckNextEvoPage(this).getMainPanel());
         });
     }
 

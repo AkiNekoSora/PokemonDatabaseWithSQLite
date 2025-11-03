@@ -19,13 +19,14 @@ import org.pokemondatabase.Pokemon;
  */
 public class CompareSuccessPage extends JPanel {
     private final JLayeredPane pane;
+    private GuiHelper helper;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper and prints the success text
      * Parameters: MainMenuPage, successText
      */
     public CompareSuccessPage(MainMenuPage mainApp, String successText) {
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("COMPARISON RESULTS",  "/background.jpg");

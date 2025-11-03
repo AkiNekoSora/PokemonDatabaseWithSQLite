@@ -11,7 +11,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.Pokemon;
 
 import static java.lang.Integer.parseInt;
@@ -34,18 +33,17 @@ public class ListPage {
     private final JLayeredPane pane;
     public ArrayList<ArrayList<Object>> pokemonDB;
     private JTextField searchField = new JTextField();
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper and states what happens when you click on
      * each button.
-     * Parameters: MainMenuPage, List of Pokémon
+     * Parameters: MainMenuPage
      */
-    public ListPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
+    public ListPage(MainMenuPage mainApp) {
         GuiHelper helper = new GuiHelper(mainApp);
 
         // Gets all Pokémon from Database and converts to a list
-        this.pokemonDB = pokemon_DBHelper.select("*", null, null, "pokedex_number", "ASC");
+        this.pokemonDB = mainApp.db.pokemon.select("*", null, null, "pokedex_number", "ASC");
         List<Pokemon> convertedPokemonList = helper.convertToPokemonList(pokemonDB);
 
         // BUILDS BASE PANEL
@@ -105,7 +103,7 @@ public class ListPage {
 
                 // Creates the new list to display based on either numbers or letters
                 for (Pokemon pokemon : convertedPokemonList) {
-                    if (isDigit(searchField.getText())) {
+                    if (helper.isDigit(searchField.getText())) {
                         if (pokemon.getPokedexNumber() == parseInt(searchField.getText())) {
                             searchResults.add(pokemon);
                             continue;
@@ -121,16 +119,6 @@ public class ListPage {
                 helper.updatePokemonList(searchResults, searchResults);
             }
         });
-    }
-
-    /* Method Name: Is Digit
-     * Purpose: Checks through a string. Checking if each char is either a digit.
-     *          Returns true if all are either a digit.
-     * Parameters: String to check
-     * Return Value: boolean
-     */
-    public boolean isDigit(String input) {
-        return input.chars().allMatch(Character::isDigit);
     }
 
     /* Method Name: getMainPanel

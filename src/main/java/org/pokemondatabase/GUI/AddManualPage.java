@@ -3,13 +3,10 @@ package org.pokemondatabase.GUI;
 import java.awt.Container;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import javax.swing.*;
 
 import org.pokemondatabase.*;
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 
 /*
  * Autumn Skye
@@ -28,12 +25,8 @@ import org.pokemondatabase.DBHelper.Types_DBHelper;
  *              - getMainPanel - returns the main panel for this page
  */
 public class AddManualPage extends JFrame {
-    GuiHelper helper;
     private final JLayeredPane pane;
     private final PokemonManager pokemonManager = new PokemonManager();
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Types_DBHelper types_DBHelper = new Types_DBHelper();
-    public List<Pokemon> pokemonDB;
 
     private final JTextField pokemonNameField;
     private final JTextField pokedexNumberField;
@@ -53,12 +46,13 @@ public class AddManualPage extends JFrame {
     private final JLabel errorLabelHeight;
     private final JLabel errorLabelPokedexEntry;
 
+    private GuiHelper helper;
+
     /* Method Name: CONSTRUCTOR
-     * Purpose: Builds the base design using GUI helper
+     * Purpose: Builds the base design using GUI mainApp.helper
      * Parameters: MainMenuPage, List of Pokémon
      */
-    public AddManualPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
+    public AddManualPage(MainMenuPage mainApp) {
         helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
@@ -121,7 +115,7 @@ public class AddManualPage extends JFrame {
         JButton nextButton = helper.addSmallButton("NEXT", 805, 680);
 
         backButton.addActionListener(e -> {
-            mainApp.goToPage(new FileOrManualAddPage(mainApp, pokemonDB).getMainPanel());
+            mainApp.goToPage(new FileOrManualAddPage(mainApp).getMainPanel());
         });
 
         nextButton.addActionListener(e -> handleSubmission(mainApp));
@@ -191,7 +185,7 @@ public class AddManualPage extends JFrame {
 
             // CHECKS FOR UNIQUE POKÉDEX NUMBER
             ValidationResults validationResults =
-                    pokemonManager.validateUniquePokedexNumber(pokedexNumberInt, pokemonDB);
+                    pokemonManager.validateUniquePokedexNumber(pokedexNumberInt, mainApp);
             if (!(validationResults.getIsSuccess())) {
                 String errorMessage = validationResults.getResultString();
                 errorLabelPokedexNumber.setText(errorMessage);
@@ -265,14 +259,16 @@ public class AddManualPage extends JFrame {
         if (!hasErrors) {
             String fixedPokemonName = pokemonManager.formatPokemonName(pokemonName);
 
-            pokemon_DBHelper.insert(pokedexNumberInt, fixedPokemonName, pokemonNextEvolutionLevelInt,
+            mainApp.db.pokemon.insert(pokedexNumberInt, fixedPokemonName,
+                    pokemonNextEvolutionLevelInt,
                     String.valueOf(pokemonWeightBigDecimal), String.valueOf(pokemonHeightBigDecimal),
-                    (hasPokemonBeenCaughtBoolean ? 1 : 0), pokedexEntry, types_DBHelper.getTypeIdByName(primaryType),
-                    types_DBHelper.getTypeIdByName(secondaryType));
+                    (hasPokemonBeenCaughtBoolean ? 1 : 0), pokedexEntry,
+                    mainApp.db.types.getTypeIdByName(primaryType),
+                    mainApp.db.types.getTypeIdByName(secondaryType));
 
 
             // Get the Pokémon from the database to verify it exists.
-            ArrayList<ArrayList<Object>> result = pokemon_DBHelper.select(
+            ArrayList<ArrayList<Object>> result = mainApp.db.pokemon.select(
                     "*", "pokedex_number", String.valueOf(pokedexNumberInt), null, null);
 
             if (result != null && !result.isEmpty()) {
@@ -300,10 +296,11 @@ public class AddManualPage extends JFrame {
                 String typeDisplay = "";
                 if (primaryTypeString != "") {
                     if (secondaryTypeString != "" && !Objects.equals(secondaryTypeString, "0")) {
-                        typeDisplay = types_DBHelper.getTypeNameByID(Integer.valueOf(primaryTypeString)) +
-                                        " & " + types_DBHelper.getTypeNameByID(Integer.valueOf(secondaryTypeString));
+                        typeDisplay =
+                                mainApp.db.types.getTypeNameByID(Integer.valueOf(primaryTypeString)) +
+                                        " & " + mainApp.db.types.getTypeNameByID(Integer.valueOf(secondaryTypeString));
                     } else {
-                        typeDisplay = types_DBHelper.getTypeNameByID(Integer.valueOf(primaryTypeString));
+                        typeDisplay = mainApp.db.types.getTypeNameByID(Integer.valueOf(primaryTypeString));
                     }
                 }
 

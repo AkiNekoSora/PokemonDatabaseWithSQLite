@@ -21,13 +21,14 @@ import org.pokemondatabase.Pokemon;
  */
 public class AddManualSuccessPage {
     private final JLayeredPane pane;
+    private GuiHelper helper;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper and prints the success text
      * Parameters: MainMenuPage, List of Pokémon, successText
      */
     public AddManualSuccessPage(MainMenuPage mainApp, String successText) {
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("POKÉMON SUCCESSFULLY ADDED", "/background.jpg");

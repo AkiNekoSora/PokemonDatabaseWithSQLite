@@ -22,31 +22,31 @@ import org.pokemondatabase.Pokemon;
  */
 public class FileOrManualAddPage extends JFrame {
     private final JLayeredPane pane;
-    public List<Pokemon> pokemonDB;
+    private GuiHelper helper;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
      * Parameters: MainMenuPage, List of Pokémon
      */
-    public FileOrManualAddPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
-        GuiHelper helper = new GuiHelper(mainApp);
+    public FileOrManualAddPage(MainMenuPage mainApp) {
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("ADD POKÉMON",  "/background.jpg");
 
         // BUILDS MANUAL AND TEXT FILE BUTTONS
-        JButton addPokemonManualButton = helper.addLargeButton("ADD POKÉMON - MANUALLY", 200, 250);
+        JButton addPokemonManualButton = helper.addLargeButton("ADD POKÉMON - MANUALLY",
+                200, 250);
         JButton addPokemonTextFileButton = helper.addLargeButton("ADD POKÉMON - FILE", 200, 400);
 
         // GOES TO MANUAL PAGE IF MANUAL BUTTON CLICKED
         addPokemonManualButton.addActionListener((ActionEvent e) -> {
-            mainApp.goToPage(new AddManualPage(mainApp, pokemonDB).getMainPanel());
+            mainApp.goToPage(new AddManualPage(mainApp).getMainPanel());
         });
 
         // GOES TO TEXT FILE ADD PAGE IF TEXT FILE BUTTON CLICKED
         addPokemonTextFileButton.addActionListener((ActionEvent e) -> {
-            mainApp.goToPage(new AddFilePage(mainApp, pokemonDB).getMainPanel());
+            mainApp.goToPage(new AddFilePage(mainApp).getMainPanel());
         });
 
         // BUILDS BACK BUTTON AND HANDLES WHEN IT IS SELECTED

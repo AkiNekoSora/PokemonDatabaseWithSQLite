@@ -29,9 +29,7 @@ import org.pokemondatabase.Pokemon;
  */
 public class CheckNextEvoPage extends JFrame {
     private final JLayeredPane pane;
-    public List<Pokemon> pokemonDB;
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    GuiHelper helper;
+    private GuiHelper helper;
 
     private JTextField PokedexNumberField;
     private JTextField currentLevelField;
@@ -40,9 +38,9 @@ public class CheckNextEvoPage extends JFrame {
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper
-     * Parameters: MainMenuPage, List of Pokémon
+     * Parameters: MainMenuPage
      */
-    public CheckNextEvoPage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
+    public CheckNextEvoPage(MainMenuPage mainApp) {
         helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
@@ -106,7 +104,7 @@ public class CheckNextEvoPage extends JFrame {
         } else if(helper.isDigit(pokedexNumber)) {
             pokedexNumberInt = Integer.parseInt(pokedexNumber);
 
-            selectPokemonList = pokemon_DBHelper.select("*",
+            selectPokemonList = mainApp.db.pokemon.select("*",
             "pokedex_number", String.valueOf(pokedexNumberInt), null, null);
             if (selectPokemonList != null && !selectPokemonList.isEmpty()) {
                 selectPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);

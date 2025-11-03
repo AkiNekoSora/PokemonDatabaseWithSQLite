@@ -20,13 +20,14 @@ import org.pokemondatabase.Pokemon;
  */
 public class DeleteSuccessPage extends JPanel {
     private final JLayeredPane pane;
+    private GuiHelper helper;
 
     /* Method Name: CONSTRUCTOR
      * Purpose: Builds the base design using GUI helper and prints the success text
      * Parameters: MainMenuPage
      */
     public DeleteSuccessPage(MainMenuPage mainApp) {
-        GuiHelper helper = new GuiHelper(mainApp);
+        helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
         pane = helper.createBasePanel("DELETION COMPLETED",  "/background.jpg");

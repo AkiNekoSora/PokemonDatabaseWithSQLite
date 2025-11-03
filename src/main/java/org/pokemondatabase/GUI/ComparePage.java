@@ -30,9 +30,7 @@ import org.pokemondatabase.Pokemon;
  */
 public class ComparePage extends JFrame {
     private final JLayeredPane pane;
-    public List<Pokemon> pokemonDB;
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    GuiHelper helper;
+    private GuiHelper helper;
 
     private final JTextField firstPokedexNumberField;
     private final JTextField secondPokedexNumberField;
@@ -43,8 +41,7 @@ public class ComparePage extends JFrame {
      * Purpose: Builds the base design using GUI helper
      * Parameters: MainMenuPage, List of Pokémon
      */
-    public ComparePage(MainMenuPage mainApp, List<Pokemon> pokemonStorage) {
-        this.pokemonDB = pokemonStorage;
+    public ComparePage(MainMenuPage mainApp) {
         helper = new GuiHelper(mainApp);
 
         // BUILDS BASE PANEL
@@ -102,19 +99,19 @@ public class ComparePage extends JFrame {
         if (secondPokedexNumber.isEmpty()) {
             errorLabelSecondPokeNumber.setText("Second Pokédex Number Required.");
             hasErrors = true;
-        } else if (!helper.isDigit(secondPokedexNumber)) {
+        } if (!helper.isDigit(secondPokedexNumber)) {
             errorLabelSecondPokeNumber.setText("Letter and Spaces Not Allowed.");
             hasErrors = true;
-        } else if(helper.isDigit(secondPokedexNumber)) {
+        } if (helper.isDigit(secondPokedexNumber)) {
             secondPokedexNumberInt = Integer.parseInt(secondPokedexNumber);
-        } else if (firstPokedexNumberInt == secondPokedexNumberInt) {
+        } if (firstPokedexNumberInt == secondPokedexNumberInt) {
             errorLabelSecondPokeNumber.setText("Pokédex numbers cannot be the same.");
             hasErrors = true;
         }
 
         // CONTINUE IF NO ERRORS FOUND
         if (!hasErrors) {
-            ArrayList<ArrayList<Object>> selectPokemonList = pokemon_DBHelper.select("*",
+            ArrayList<ArrayList<Object>> selectPokemonList = mainApp.db.pokemon.select("*",
                     "pokedex_number", String.valueOf(firstPokedexNumberInt), null, null);
 
             // VERIFIES BOTH POKÉMON EXIST
@@ -125,7 +122,7 @@ public class ComparePage extends JFrame {
                 hasErrors = true;
             }
 
-            selectPokemonList = pokemon_DBHelper.select("*",
+            selectPokemonList = mainApp.db.pokemon.select("*",
                     "pokedex_number", String.valueOf(secondPokedexNumberInt), null, null);
             if (selectPokemonList != null && !selectPokemonList.isEmpty()) {
                 secondPokemon = (helper.convertToPokemonList(selectPokemonList)).get(0);

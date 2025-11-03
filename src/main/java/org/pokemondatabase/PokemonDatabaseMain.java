@@ -21,6 +21,7 @@
 
 package org.pokemondatabase;
 
+import org.pokemondatabase.GUI.ChooseDBPage;
 import org.pokemondatabase.GUI.MainMenuPage;
 
 import java.util.ArrayList;
@@ -32,7 +33,6 @@ public class PokemonDatabaseMain {
      * Return Value: No return value
      */
     public static void main(String[] args) {
-        List<Pokemon> pokemonStorage = new ArrayList<>();
-        MainMenuPage mainApp = new MainMenuPage(pokemonStorage);
+        MainMenuPage mainMenuPage = new MainMenuPage();
     }
 }

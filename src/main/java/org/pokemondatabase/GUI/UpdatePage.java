@@ -7,6 +7,7 @@ import java.util.Objects;
 import javax.swing.*;
 
 import org.pokemondatabase.*;
+import org.pokemondatabase.DBHelper.DBHelper;
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.DBHelper.Types_DBHelper;
 
@@ -31,8 +32,6 @@ public class UpdatePage extends JFrame {
     private final PokemonManager pokemonManager = new PokemonManager();
     public List<Pokemon> pokemonDB;
     GuiHelper helper;
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     private final JLayeredPane pane;
 
@@ -223,7 +222,7 @@ public class UpdatePage extends JFrame {
 
             // CHECKS FOR UNIQUE POKÉDEX NUMBER
             ValidationResults validationResults =
-                    pokemonManager.validateUniquePokedexNumber(pokedexNumberInt, pokemonDB);
+                    pokemonManager.validateUniquePokedexNumber(pokedexNumberInt, mainApp);
             if (!(validationResults.getIsSuccess())) {
                 String errorMessage = "";
                 for (Pokemon pokemon : pokemonDB) {
@@ -315,11 +314,11 @@ public class UpdatePage extends JFrame {
 
         // IF NO ERRORS FOUND, CONTINUE, UPDATE POKÉMON AND GO BACK TO POKÉMON INFO PAGE
         if (!hasErrors) {
-            pokemon_DBHelper.updateAll(String.valueOf(pokedexNumberInt), pokemonName,
+            mainApp.db.pokemon.updateAll(String.valueOf(pokedexNumberInt), pokemonName,
                     String.valueOf(pokemonNextEvolutionLevelInt), pokemonWeight, pokemonHeight,
                     (hasPokemonBeenCaughtBoolean ? "1" : "0"), pokedexEntry,
-                    String.valueOf(types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType()))),
-                    String.valueOf(types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType()))),
+                    String.valueOf(mainApp.db.types.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType()))),
+                    String.valueOf(mainApp.db.types.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType()))),
                     String.valueOf(updatedPokemon.getPokedexNumber()));
 
             updatedPokemon.setPokemonName(pokemonName);

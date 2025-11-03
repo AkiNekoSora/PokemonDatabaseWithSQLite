@@ -1,14 +1,6 @@
 package org.pokemondatabase.GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -17,21 +9,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
-import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
-import org.pokemondatabase.DBHelper.Types_DBHelper;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxRenderer;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomComboBoxUI;
 import org.pokemondatabase.GUI.CustomGUIDesigns.CustomScrollBarUI;
@@ -77,9 +56,6 @@ import static java.lang.Integer.parseInt;
 public class GuiHelper {
     private MainMenuPage mainApp;
     public JPanel foregroundPanel;
-
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     private final Color titleColor = new Color(36, 37, 40);
     public final Color pokemonRed = new Color(239, 49, 49);
@@ -159,6 +135,16 @@ public class GuiHelper {
         foregroundPanel.add(titleLabel);
         layeredPane.add(foregroundPanel, JLayeredPane.PALETTE_LAYER);
 
+        // BUILDS CLOSE BUTTON AND HANDLES WHEN IT IS SELECTED
+        JButton closeButton = addTinyButton("X", 920, 5);
+        closeButton.addActionListener(e -> {
+            mainApp.db.close();
+            Window window = SwingUtilities.getWindowAncestor(layeredPane);
+            if (window != null) {
+                window.dispose();
+            }
+        });
+
         return layeredPane;
     }
 
@@ -190,6 +176,15 @@ public class GuiHelper {
         foregroundPanel.add(button);
 
         return button;
+    }
+
+    /* Method Name: addTinyButton
+     * Purpose: Calls addButton to build small button
+     * Parameters: Text, Location (x/y)
+     * Return Value: JButton
+     */
+    public JButton addTinyButton(String buttonText, int x, int y) {
+        return this.addButton("/smallButton.png", buttonText, x, y, 50, 50, smallButtonFont);
     }
 
     /* Method Name: addSmallButton
@@ -227,37 +222,38 @@ public class GuiHelper {
      * Parameters: List of Pokémon and List of Filtered Pokémon
      * Return Value: JScrollPane
      */
-    public JScrollPane addPokemonList(List<Pokemon> pokemonDB, List<Pokemon> filteredPokemonList) {
-        JPanel listPanel = new JPanel();
-        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
-        listPanel.setOpaque(false);
+    public JScrollPane addPokemonList(List<Pokemon> pokemonDB, List<Pokemon> filteredPokemonList){
+            JPanel listPanel = new JPanel();
+            listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+            listPanel.setOpaque(false);
 
-        if (filteredPokemonList == null) {
-            // Adds each Pokémon to the list panel using createPokémonListItem
-            for (Pokemon pokemon : pokemonDB) {
-                listPanel.add(createPokemonListItem(pokemon, pokemonDB));
+            if (filteredPokemonList == null) {
+                // Adds each Pokémon to the list panel using createPokémonListItem
+                for (Pokemon pokemon : pokemonDB) {
+                    listPanel.add(createPokemonListItem(pokemon, pokemonDB));
+                }
+            } else {
+                for (Pokemon pokemon : filteredPokemonList) {
+                    listPanel.add(createPokemonListItem(pokemon, pokemonDB));
+                }
             }
-        } else {
-            for (Pokemon pokemon : filteredPokemonList) {
-                listPanel.add(createPokemonListItem(pokemon, pokemonDB));
-            }
+
+            listPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+
+            // Create JScrollPane and designs it using the CustomGUIDesigns
+            pokemonScrollPane = new JScrollPane(listPanel);
+            pokemonScrollPane.setBounds(100, 110, 800, 550);
+            pokemonScrollPane.setOpaque(false);
+            pokemonScrollPane.getViewport().setOpaque(false);
+            pokemonScrollPane.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+            pokemonScrollPane.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
+            pokemonScrollPane.setBorder(null);
+
+            foregroundPanel.add(pokemonScrollPane);
+
+            return pokemonScrollPane;
         }
 
-        listPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-
-        // Create JScrollPane and designs it using the CustomGUIDesigns
-        pokemonScrollPane = new JScrollPane(listPanel);
-        pokemonScrollPane.setBounds(100, 110, 800, 550);
-        pokemonScrollPane.setOpaque(false);
-        pokemonScrollPane.getViewport().setOpaque(false);
-        pokemonScrollPane.getVerticalScrollBar().setUI(new CustomScrollBarUI());
-        pokemonScrollPane.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
-        pokemonScrollPane.setBorder(null);
-
-        foregroundPanel.add(pokemonScrollPane);
-
-        return pokemonScrollPane;
-    }
 
     /* Method Name: updatePokémonList
      * Purpose: Takes the scrollPane that was created above and replaces the list with the new
@@ -361,7 +357,7 @@ public class GuiHelper {
             PokemonTypes primaryType;
             if (primaryTypeString != null && !primaryTypeString.isEmpty()) {
                 primaryType = PokemonTypes.fromString(
-                        types_DBHelper.getTypeNameByID(Integer.valueOf(primaryTypeString))
+                        mainApp.db.types.getTypeNameByID(Integer.valueOf(primaryTypeString))
                 );
             } else {
                 primaryType = null;
@@ -373,7 +369,8 @@ public class GuiHelper {
             if (secondaryTypeString != null || secondaryTypeString != "null") {
                 if (!secondaryTypeString.isEmpty()
                         && !secondaryTypeString.equals("0")) {
-                    secondaryType = PokemonTypes.fromString(types_DBHelper.getTypeNameByID(Integer.valueOf(secondaryTypeString)));
+                    secondaryType =
+                            PokemonTypes.fromString(mainApp.db.types.getTypeNameByID(Integer.valueOf(secondaryTypeString)));
                 }
             }
 

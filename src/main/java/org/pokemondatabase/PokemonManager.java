@@ -11,6 +11,7 @@ import java.util.Objects;
 
 import org.pokemondatabase.DBHelper.Pokemon_DBHelper;
 import org.pokemondatabase.DBHelper.Types_DBHelper;
+import org.pokemondatabase.GUI.MainMenuPage;
 import org.pokemondatabase.exceptions.InvalidPokedexNumberException;
 import org.pokemondatabase.exceptions.InvalidPokemonTypeException;
 
@@ -40,8 +41,8 @@ public class PokemonManager {
     public UserInputHelper userInputHelper;
     private final Text text;
     private final PokemonTypes pokemonTypes;
-    Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
-    Types_DBHelper types_DBHelper = new Types_DBHelper();
+    //Pokemon_DBHelper pokemon_DBHelper = new Pokemon_DBHelper();
+    //Types_DBHelper types_DBHelper = new Types_DBHelper();
 
     // Constructor used to bring the userInputHelper and Text classes into scope.
     public PokemonManager() {
@@ -63,7 +64,7 @@ public class PokemonManager {
      * Parameters: The List that holds all Pokémon
      * Return Value: String
      */
-    public String addPokemon(List<Pokemon> pokemonStorage) {
+    public String addPokemon(List<Pokemon> pokemonStorage, MainMenuPage mainApp) {
         System.out.println(text.BLUE + "\nADDING A NEW POKÉMON!");
         System.out.println("---------------------\n" + text.RESET);
 
@@ -73,7 +74,7 @@ public class PokemonManager {
             return userInputHelper.errorMessageColors("Pokémon creation cancelled.");
         }
 
-        int pokedexNumber = addPokedexNumber(pokemonStorage);
+        int pokedexNumber = addPokedexNumber(mainApp);
         PokemonTypesManager pokemonTypes = addPokemonTypes();
         int nextEvolutionLevel = addEvolutionLevel();
         BigDecimal pokemonWeightPounds = addPokemonWeightOrHeight("weight");
@@ -81,11 +82,11 @@ public class PokemonManager {
         boolean hasPokemonBeenCaught = hasPokemonBeenCaught();
         String pokedexEntry = addPokedexEntry();
 
-        pokemon_DBHelper.insert(pokedexNumber, pokemonName, nextEvolutionLevel,
+        mainApp.db.pokemon.insert(pokedexNumber, pokemonName, nextEvolutionLevel,
                 String.valueOf(pokemonWeightPounds), String.valueOf(pokemonHeightMeters),
                 (hasPokemonBeenCaught ? 1 : 0), pokedexEntry,
-                types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType())),
-                types_DBHelper.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType())));
+                mainApp.db.types.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonPrimaryType())),
+                mainApp.db.types.getTypeIdByName(String.valueOf(pokemonTypes.getPokemonSecondaryType())));
 
         Pokemon newPokemon = new Pokemon(pokemonName, pokedexNumber, pokemonTypes,
                 nextEvolutionLevel, pokemonWeightPounds, pokemonHeightMeters, hasPokemonBeenCaught,
@@ -146,7 +147,7 @@ public class PokemonManager {
      * Parameters: None
      * Return Value: int of Pokédex Number
      */
-    public int addPokedexNumber(List<Pokemon> pokemonStorage) {
+    public int addPokedexNumber(MainMenuPage mainApp) {
         int pokedexNumber = 0;
         boolean uniquePokedexNum = false;
 
@@ -158,7 +159,7 @@ public class PokemonManager {
                             "distinct Pokémon species, 1164. Please try again.");
 
             // Checks to make sure the Pokédex Number is unique.
-            uniquePokedexNum = validateUniquePokedexNumber(pokedexNumber, pokemonStorage).getIsSuccess();
+            uniquePokedexNum = validateUniquePokedexNumber(pokedexNumber, mainApp).getIsSuccess();
         }
         return pokedexNumber;
     }
@@ -169,8 +170,8 @@ public class PokemonManager {
      * Parameters: Pokédex Number and Pokémon List
      * Return Value: ValidationResults (boolean and String)
      */
-    public ValidationResults validateUniquePokedexNumber(int pokedexNumber, List<Pokemon> pokemonStorage) {
-        ArrayList<ArrayList<Object>> result = pokemon_DBHelper.select(
+    public ValidationResults validateUniquePokedexNumber(int pokedexNumber, MainMenuPage mainApp) {
+        ArrayList<ArrayList<Object>> result = mainApp.db.pokemon.select(
                 "*", "pokedex_number", String.valueOf(pokedexNumber), null, null);
 
         if (result != null && !result.isEmpty()) {
@@ -293,8 +294,7 @@ public class PokemonManager {
      * Parameters: The List that holds all Pokémon, File Location
      * Return Value: Validation Results (boolean, String)
      */
-    public ValidationResults addPokemonFromFileGUI(List<Pokemon> pokemonStorage, String fileLocation) {
-        int pokemonListPreviousSize = pokemonStorage.size();
+    public ValidationResults addPokemonFromFileGUI(String fileLocation, MainMenuPage mainApp) {
         int lineCounter = 0;
         int successfulPokemonCount = 0;
         String line;
@@ -326,7 +326,7 @@ public class PokemonManager {
                     break;
                 }
 
-                ValidationResults returnedList = getPokemonForGUI(pokemonStorage, variables, lineCounter);
+                ValidationResults returnedList = getPokemonForGUI(variables, lineCounter, mainApp);
 
                 // Creates a new temp list and verifies it is all successful before adding to DB
                 if (returnedList != null) {
@@ -353,13 +353,13 @@ public class PokemonManager {
             int successfulAddPokemonCount = 0;
             // Adds all Pokémon from temp list to the database
             for (Pokemon pokemon : tempPokemonList) {
-                pokemon_DBHelper.insert(pokemon.getPokedexNumber(), pokemon.getPokemonName(),
+                mainApp.db.pokemon.insert(pokemon.getPokedexNumber(), pokemon.getPokemonName(),
                         pokemon.getNextEvolutionLevel(),
                         String.valueOf(pokemon.getPokemonWeightKilograms()),
                         String.valueOf(pokemon.getPokemonHeightMeters()),
                         (pokemon.getPokemonIsCaught() ? 1 : 0), pokemon.getPokedexEntry(),
-                        types_DBHelper.getTypeIdByName(String.valueOf(pokemon.getPrimaryType())),
-                        types_DBHelper.getTypeIdByName(String.valueOf(pokemon.getSecondaryType())));
+                        mainApp.db.types.getTypeIdByName(String.valueOf(pokemon.getPrimaryType())),
+                        mainApp.db.types.getTypeIdByName(String.valueOf(pokemon.getSecondaryType())));
                 successfulAddPokemonCount++;
             }
 
@@ -369,10 +369,6 @@ public class PokemonManager {
             } else return new ValidationResults(false, "Not all Pokemon have been added. Unknown " +
                     "Error occured.");
         } else {
-            // Used to remove the Pokémon that were added in this run if there was an error.
-            while (pokemonStorage.size() > pokemonListPreviousSize) {
-                pokemonStorage.remove(pokemonStorage.size() - 1);
-            }
             return new ValidationResults(false, ("<html><body style='font-size:15pt'>"
                     + errorMessage + "<br> Pokémon have not been added. Please try again."));
         }
@@ -385,7 +381,7 @@ public class PokemonManager {
      *          counter used to check what current line the system is on.
      * Return Value: ValidationResults(Boolean, String)
      */
-    public ValidationResults getPokemonForGUI(List<Pokemon> pokemonStorage, String[] variables, int lineCounter) {
+    public ValidationResults getPokemonForGUI(String[] variables, int lineCounter, MainMenuPage mainApp) {
         Pokemon tempPokemon;
 
         // Grab Pokémon Name
@@ -406,7 +402,7 @@ public class PokemonManager {
                     "found on line " + lineCounter + ".");
         }
 
-        if (!(validateUniquePokedexNumber(pokedexNumber, pokemonStorage).getIsSuccess())) {
+        if (!(validateUniquePokedexNumber(pokedexNumber, mainApp).getIsSuccess())) {
             return new ValidationResults(false, "Pokédex Number must be unique. Error " +
                     "can be found on line " + lineCounter + ".");
         } if (pokedexNumber < 1 || pokedexNumber > 1164) {
@@ -519,7 +515,7 @@ public class PokemonManager {
      * Parameters: The List that holds all Pokémon
      * Return Value: String
      */
-    public String addPokemonFromFile(List<Pokemon> pokemonStorage) {
+    public String addPokemonFromFile(List<Pokemon> pokemonStorage, MainMenuPage mainApp) {
         int pokemonListPreviousSize = pokemonStorage.size();
         String correctTxtFormat = """
                How the .txt file needs to be formatted:
@@ -575,7 +571,7 @@ public class PokemonManager {
 
                 //Attempts to create a Pokémon using a line and then adds it to the Pokémon storage.
                 try {
-                    Pokemon newPokemon = getPokemon(pokemonStorage, variables, lineCounter);
+                    Pokemon newPokemon = getPokemon(variables, lineCounter, mainApp);
 
                     pokemonStorage.add(newPokemon);
                     System.out.println(text.CYAN + "\nLine " + lineCounter + ": " +
@@ -614,7 +610,7 @@ public class PokemonManager {
      *          counter used to check what current line the system is on.
      * Return Value: Pokémon
      */
-    public Pokemon getPokemon(List<Pokemon> pokemonStorage, String[] variables, int lineCounter) {
+    public Pokemon getPokemon(String[] variables, int lineCounter, MainMenuPage mainApp) {
         // Grab Pokémon Name
         String pokemonName = "";
         if (userInputHelper.hasNoDigitsOrSpaces(variables[0])) {
@@ -627,7 +623,7 @@ public class PokemonManager {
         // Grab Pokédex Number
         int pokedexNumber = Integer.parseInt(variables[1]);
 
-        if (validateUniquePokedexNumber(pokedexNumber, pokemonStorage).getIsSuccess()) {
+        if (validateUniquePokedexNumber(pokedexNumber, mainApp).getIsSuccess()) {
             throw new InvalidPokedexNumberException("Pokédex Number must be unique. Error " +
                     "can be found on line " + lineCounter);
         } if (pokedexNumber < 1 || pokedexNumber > 1164) {
@@ -725,7 +721,7 @@ public class PokemonManager {
      * Parameters: List of Pokémon
      * Return Value: String
      */
-    public String updatePokemonInformation(List<Pokemon> pokemonStorage) {
+    public String updatePokemonInformation(List<Pokemon> pokemonStorage, MainMenuPage mainApp) {
         boolean userTryAgain = true;
         String answers = """
                     What piece of information you would like to update?
@@ -782,7 +778,7 @@ public class PokemonManager {
                             foundPokemon.setPokemonName(newPokemonName);
                         }
                         case 2 -> { // UPDATE Pokémon Pokédex number
-                            int newPokedexNumber = addPokedexNumber(pokemonStorage);
+                            int newPokedexNumber = addPokedexNumber(mainApp);
                             foundPokemon.setPokedexNumber(newPokedexNumber);
                         }
                         case 3 -> { // UPDATE Pokémon Type(s)

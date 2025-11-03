@@ -67,32 +67,32 @@ public class PokemonDatabaseMenu {
         PokemonManager pokemonManager = new PokemonManager();
 
         // Switch for all Pokémon methods
-        switch (userChoice) {
-            // ADD Pokémon using CLI
-            case 1: System.out.println(pokemonManager.addPokemon(pokemonStorage));
-                break;
-            // ADD Pokémon using a File
-            case 2: System.out.println(pokemonManager.addPokemonFromFile(pokemonStorage));
-                break;
-            // REMOVE a Pokémon using CLI
-            case 3: System.out.println(pokemonManager.removePokemonByPokedexID(pokemonStorage));
-                break;
-           // SEARCH Pokémon using CLI
-            case 4: System.out.println(pokemonManager.findPokemonByPokedexID(pokemonStorage));
-                break;
-            // PRINT all Pokémon to the CLI
-            case 5: System.out.println(pokemonManager.printAllPokemon(pokemonStorage));
-                break;
-            // UPDATE Pokémon Information using CLI
-            case 6: System.out.println(pokemonManager.updatePokemonInformation(pokemonStorage));
-                break;
-            // COMPARE Pokémon Weight & Height using CLI
-            case 7: System.out.println(pokemonManager.comparePokemonByPokedexID(pokemonStorage));
-                break;
-            // CHECK next evolution level of a Pokémon using CLI
-            case 8: System.out.println(pokemonManager.checkPokemonNextEvolution(pokemonStorage));
-                break;
-        }
+//        switch (userChoice) {
+//            // ADD Pokémon using CLI
+//            case 1: System.out.println(pokemonManager.addPokemon(pokemonStorage, mainApp));
+//                break;
+//            // ADD Pokémon using a File
+//            case 2: System.out.println(pokemonManager.addPokemonFromFile(pokemonStorage));
+//                break;
+//            // REMOVE a Pokémon using CLI
+//            case 3: System.out.println(pokemonManager.removePokemonByPokedexID(pokemonStorage));
+//                break;
+//           // SEARCH Pokémon using CLI
+//            case 4: System.out.println(pokemonManager.findPokemonByPokedexID(pokemonStorage));
+//                break;
+//            // PRINT all Pokémon to the CLI
+//            case 5: System.out.println(pokemonManager.printAllPokemon(pokemonStorage));
+//                break;
+//            // UPDATE Pokémon Information using CLI
+//            case 6: System.out.println(pokemonManager.updatePokemonInformation(pokemonStorage));
+//                break;
+//            // COMPARE Pokémon Weight & Height using CLI
+//            case 7: System.out.println(pokemonManager.comparePokemonByPokedexID(pokemonStorage));
+//                break;
+//            // CHECK next evolution level of a Pokémon using CLI
+//            case 8: System.out.println(pokemonManager.checkPokemonNextEvolution(pokemonStorage));
+//                break;
+//        }
 
     }
 
