@@ -72,7 +72,7 @@ public class AddFilePage extends JFrame {
         errorFilePath.setText("");
 
         // Opens the file chooser
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(System.getProperty("user.dir"));
         int returnVal = fileChooser.showOpenDialog(null);
 
         // If the user attempts to add a file: get the file location, call addPokemonFrom File
